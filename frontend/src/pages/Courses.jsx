@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BookOpen, Calendar, CreditCard, Search, Filter, X, Clock } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../components/ui/Toast';
 import Loader from '../components/ui/Loader';

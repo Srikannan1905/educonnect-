@@ -1,4 +1,5 @@
-const { User, Payment, Booking } = require('../models');
+const { User, Payment, Booking, Notification, ActivityLog } = require('../models');
+const notificationService = require('../utils/notificationService');
 
 // @desc    Get all users
 // @route   GET /api/users
@@ -49,6 +50,17 @@ exports.approveStaff = async (req, res) => {
         }
         user.status = 'active';
         await user.save();
+
+        // Notify staff (Internal)
+        await Notification.create({
+            userId: user.id,
+            message: 'Your staff account has been approved! You can now access the staff portal.',
+            type: 'system'
+        });
+
+        // Notify staff (External Simulation)
+        await notificationService.notifyStaffApproval(user);
+
         res.json({ message: 'Staff approved successfully' });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -64,6 +76,17 @@ exports.rejectStaff = async (req, res) => {
         }
         user.status = 'rejected';
         await user.save();
+
+        // Notify staff (Internal)
+        await Notification.create({
+            userId: user.id,
+            message: 'Your staff account request has been rejected. Please contact Admin for details.',
+            type: 'system'
+        });
+
+        // Notify staff (External Simulation)
+        await notificationService.notifyStaffRejection(user);
+
         res.json({ message: 'Staff rejected successfully' });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -117,6 +140,11 @@ exports.updateUser = async (req, res) => {
             if (req.body.qualification) user.qualification = req.body.qualification;
             if (req.body.parentName) user.parentName = req.body.parentName;
             if (req.body.parentPhone) user.parentPhone = req.body.parentPhone;
+            if (req.body.specialization) user.specialization = req.body.specialization;
+            if (req.body.projectPdf) user.projectPdf = req.body.projectPdf;
+            if (req.body.educationPdf) user.educationPdf = req.body.educationPdf;
+            if (req.body.bio) user.bio = req.body.bio;
+            if (req.body.subjects) user.subjects = req.body.subjects;
 
             await user.save();
             res.json({
@@ -124,7 +152,13 @@ exports.updateUser = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                profileImage: user.profileImage
+                profileImage: user.profileImage,
+                specialization: user.specialization,
+                projectPdf: user.projectPdf,
+                educationPdf: user.educationPdf,
+                qualification: user.qualification,
+                bio: user.bio,
+                subjects: user.subjects
             });
         } else {
             res.status(404).json({ message: 'User not found' });
@@ -141,9 +175,33 @@ exports.getPublicInstructors = async (req, res) => {
     try {
         const instructors = await User.findAll({
             where: { role: 'staff', status: 'active' },
-            attributes: ['id', 'name', 'qualification', 'profileImage']
+            attributes: ['id', 'name', 'qualification', 'profileImage', 'bio', 'subjects']
         });
         res.json(instructors);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+// @desc    Get activity logs for a user or all if admin
+// @route   GET /api/users/activities
+// @access  Private
+exports.getActivityLogs = async (req, res) => {
+    try {
+        let activities;
+        if (req.user.role === 'admin') {
+            activities = await ActivityLog.findAll({
+                include: [{ model: User, as: 'user', attributes: ['name', 'role'] }],
+                order: [['createdAt', 'DESC']],
+                limit: 50
+            });
+        } else {
+            activities = await ActivityLog.findAll({
+                where: { userId: req.user.id },
+                order: [['createdAt', 'DESC']],
+                limit: 20
+            });
+        }
+        res.json(activities);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

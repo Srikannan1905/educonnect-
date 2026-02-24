@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { CreditCard, Trash2, AlertTriangle, X, Loader } from 'lucide-react'; // Added Loader, X, AlertTriangle
+import { CreditCard, Trash2, AlertTriangle, X, Loader, Printer } from 'lucide-react'; // Added Loader, X, AlertTriangle, Printer
 import { useToast } from '../../components/ui/Toast'; // Import Toast
 
 export default function PaymentManager() {
@@ -18,14 +18,16 @@ export default function PaymentManager() {
         fetchPayments();
     }, []);
 
-    const fetchPayments = async () => {
+    async function fetchPayments() {
         try {
             setLoading(true);
             const token = localStorage.getItem('token');
             const res = await axios.get('/payments', {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setPayments(res.data);
+            if (Array.isArray(res.data)) {
+                setPayments(res.data);
+            }
             setLoading(false);
             setLoading(false);
         } catch (err) {
@@ -43,7 +45,7 @@ export default function PaymentManager() {
         setDeleteModalOpen(true);
     };
 
-    const handleDelete = async () => {
+    async function handleDelete() {
         if (!paymentToDelete) return;
 
         setIsDeleting(true);
@@ -112,7 +114,7 @@ export default function PaymentManager() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {payments.map((payment) => (
+                            {(Array.isArray(payments) ? payments : []).map((payment) => (
                                 <tr key={payment.id} className="hover:bg-gray-50 transition-colors">
                                     <td className="p-4 text-sm text-gray-600">
                                         <div className="font-medium">{new Date(payment.createdAt).toLocaleDateString()}</div>
@@ -136,19 +138,22 @@ export default function PaymentManager() {
                                         </span>
                                     </td>
                                     <td className="p-4 flex items-center gap-3">
-                                        <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${payment.status === 'completed' ? 'bg-green-50 text-green-700 border-green-200' :
-                                            payment.status === 'failed' ? 'bg-red-50 text-red-700 border-red-200' :
-                                                'bg-yellow-50 text-yellow-700 border-yellow-200'
-                                            }`}>
-                                            {payment.status}
-                                        </span>
-                                        <button
-                                            onClick={() => confirmDelete(payment)}
-                                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all"
-                                            title="Delete Transaction"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => window.open(`/invoice/${payment.id}`, '_blank')}
+                                                className="p-2 text-blue-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all"
+                                                title="View Invoice"
+                                            >
+                                                <Printer size={18} />
+                                            </button>
+                                            <button
+                                                onClick={() => confirmDelete(payment)}
+                                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all"
+                                                title="Delete Transaction"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

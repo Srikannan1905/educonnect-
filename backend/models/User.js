@@ -29,10 +29,14 @@ const User = sequelize.define('User', {
     },
     status: {
         type: DataTypes.ENUM('active', 'pending', 'rejected'),
-        defaultValue: 'active',
+        defaultValue: 'pending',
     },
     phone: {
         type: DataTypes.STRING,
+        allowNull: true,
+    },
+    address: {
+        type: DataTypes.TEXT,
         allowNull: true,
     },
     qualification: {
@@ -50,6 +54,26 @@ const User = sequelize.define('User', {
     profileImage: {
         type: DataTypes.STRING,
         allowNull: true, // URL path to the uploaded image
+    },
+    specialization: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    projectPdf: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    educationPdf: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    bio: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+    },
+    subjects: {
+        type: DataTypes.STRING,
+        allowNull: true, // Comma separated subjects e.g. "Computer, Mathematics"
     },
 }, {
     timestamps: true,

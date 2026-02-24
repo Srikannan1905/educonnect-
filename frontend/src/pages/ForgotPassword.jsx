@@ -9,7 +9,7 @@ export default function ForgotPassword() {
     const [error, setError] = useState('');
     const [step, setStep] = useState(1); // 1: Input Email, 2: Success Message
 
-    const handleSubmit = async (e) => {
+    async function handleSubmit(e) {
         e.preventDefault();
         setMessage('');
         setError('');

@@ -19,7 +19,7 @@ export default function StaffRegister() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async (e) => {
+    async function handleSubmit(e) {
         e.preventDefault();
         setError('');
         setSuccess('');

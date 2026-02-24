@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+
 import { BookOpen, Users, Award, ArrowRight, Star } from 'lucide-react';
 
 import axios from "axios";
@@ -10,7 +10,7 @@ export default function Home() {
     const [instructors, setInstructors] = useState([]);
 
     useEffect(() => {
-        const fetchInstructors = async () => {
+        async function fetchInstructors() {
             try {
                 // Fetch users with role 'staff' (instructors)
                 // Note: The public API might need adjustment if /api/users is protected. 
@@ -28,7 +28,9 @@ export default function Home() {
                 // Let's create a new route /api/public/instructors or similar.
                 // For now, I'll just write the fetch logic and I will fix the backend in the next step.
                 const res = await axios.get('/users/public/instructors');
-                setInstructors(res.data);
+                if (Array.isArray(res.data)) {
+                    setInstructors(res.data);
+                }
             } catch (err) {
                 console.error("Failed to fetch instructors");
             }
@@ -229,10 +231,10 @@ function TestimonialCard({ quote, author, role }) {
 
 // WhatsApp Floating Button Component
 function WhatsAppButton() {
-    const [whatsappNumber, setWhatsappNumber] = useState('91787144323'); // Default
+    const [whatsappNumber, setWhatsappNumber] = useState('917871444323'); // Default
 
     useEffect(() => {
-        const fetchSettings = async () => {
+        async function fetchSettings() {
             try {
                 const res = await axios.get('/company');
                 if (res.data.whatsappNumber) {

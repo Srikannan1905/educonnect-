@@ -7,6 +7,7 @@ export default function CourseManager() {
     const [centers, setCenters] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentCourse, setCurrentCourse] = useState(null);
+    const [user, setUser] = useState(null);
     const [formData, setFormData] = useState({
         title: '',
         subject: '',
@@ -16,42 +17,65 @@ export default function CourseManager() {
         duration: '',
         description: '',
         centerId: '',
+        staffId: '',
     });
-
-    useEffect(() => {
-        fetchCourses();
-        fetchCenters();
-    }, []);
+    const [staff, setStaff] = useState([]);
 
     const getAuthHeader = () => {
         const token = localStorage.getItem('token');
         return { headers: { Authorization: `Bearer ${token}` } };
     };
 
-    const fetchCourses = async () => {
+    async function fetchCourses() {
         try {
             const res = await axios.get('/courses');
-            setCourses(res.data);
+            if (Array.isArray(res.data)) {
+                setCourses(res.data);
+            }
         } catch (err) {
             console.error(err);
         }
     };
 
-    const fetchCenters = async () => {
+    async function fetchCenters() {
         try {
             const res = await axios.get('/centers');
-            setCenters(res.data);
+            if (Array.isArray(res.data)) {
+                setCenters(res.data);
+            }
         } catch (err) {
             console.error("Failed to fetch centers", err);
         }
     }
 
-    const handleDelete = async (id) => {
+    async function fetchStaff() {
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.get('/users', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (Array.isArray(res.data)) {
+                setStaff(res.data.filter(u => u.role === 'staff' && u.status === 'active'));
+            }
+        } catch (err) {
+            console.error("Failed to fetch staff", err);
+        }
+    };
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) setUser(JSON.parse(storedUser));
+        fetchCourses();
+        fetchCenters();
+        fetchStaff();
+    }, []);
+
+    async function handleDelete(id) {
         if (confirm('Are you sure you want to delete this course?')) {
             try {
                 await axios.delete(`/courses/${id}`, getAuthHeader());
                 fetchCourses();
-            } catch (err) {
+            } catch {
                 alert('Failed to delete course');
             }
         }
@@ -69,6 +93,7 @@ export default function CourseManager() {
             description: course.description || '',
             thumbnail: course.thumbnail || '',
             centerId: course.centerId || (centers.length > 0 ? centers[0].id : ''),
+            staffId: course.staffId || '',
         });
         setIsModalOpen(true);
     };
@@ -85,13 +110,14 @@ export default function CourseManager() {
             description: '',
             thumbnail: '',
             centerId: centers.length > 0 ? centers[0].id : '',
+            staffId: '',
         });
         setIsModalOpen(true);
     };
 
     const [uploading, setUploading] = useState(false);
 
-    const handleSubmit = async (e) => {
+    async function handleSubmit(e) {
         e.preventDefault();
         if (!formData.centerId && centers.length === 0) {
             alert("No centers available to assign course to.");
@@ -111,7 +137,7 @@ export default function CourseManager() {
                     headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
                 });
                 thumbnailUrl = uploadRes.data;
-            } catch (err) {
+            } catch {
                 alert('Failed to upload image');
                 setUploading(false);
                 return;
@@ -145,9 +171,11 @@ export default function CourseManager() {
         <div>
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">Manage Courses</h2>
-                <button onClick={handleAdd} className="bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-green-700">
-                    <Plus size={20} /> Add Course
-                </button>
+                {user?.role === 'admin' && (
+                    <button onClick={handleAdd} className="bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-green-700">
+                        <Plus size={20} /> Add Course
+                    </button>
+                )}
             </div>
 
             <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -158,11 +186,11 @@ export default function CourseManager() {
                             <th className="p-4">Subject</th>
                             <th className="p-4">Board</th>
                             <th className="p-4">Mode</th>
-                            <th className="p-4">Actions</th>
+                            {user?.role === 'admin' && <th className="p-4">Actions</th>}
                         </tr>
                     </thead>
                     <tbody>
-                        {courses.map((course) => (
+                        {(Array.isArray(courses) ? courses : []).map((course) => (
                             <tr key={course.id} className="border-b hover:bg-gray-50">
                                 <td className="p-4 font-medium">{course.title}</td>
                                 <td className="p-4">{course.subject}</td>
@@ -172,10 +200,12 @@ export default function CourseManager() {
                                         {course.mode}
                                     </span>
                                 </td>
-                                <td className="p-4 flex gap-3">
-                                    <button onClick={() => handleEdit(course)} className="text-blue-600 hover:text-blue-800"><Edit size={18} /></button>
-                                    <button onClick={() => handleDelete(course.id)} className="text-red-600 hover:text-red-800"><Trash2 size={18} /></button>
-                                </td>
+                                {user?.role === 'admin' && (
+                                    <td className="p-4 flex gap-3">
+                                        <button onClick={() => handleEdit(course)} className="text-blue-600 hover:text-blue-800"><Edit size={18} /></button>
+                                        <button onClick={() => handleDelete(course.id)} className="text-red-600 hover:text-red-800"><Trash2 size={18} /></button>
+                                    </td>
+                                )}
                             </tr>
                         ))}
                     </tbody>
@@ -211,8 +241,19 @@ export default function CourseManager() {
                                 <label className="block text-sm font-medium mb-1">Center</label>
                                 <select className="w-full p-2 border rounded" value={formData.centerId} onChange={e => setFormData({ ...formData, centerId: e.target.value })} required>
                                     <option value="">Select Center</option>
-                                    {centers.map(center => (
+                                    {(Array.isArray(centers) ? centers : []).map(center => (
                                         <option key={center.id} value={center.id}>{center.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Instructor Selection */}
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Instructor (Optional)</label>
+                                <select className="w-full p-2 border rounded" value={formData.staffId} onChange={e => setFormData({ ...formData, staffId: e.target.value })}>
+                                    <option value="">Unassigned</option>
+                                    {staff.map(s => (
+                                        <option key={s.id} value={s.id}>{s.name} ({s.specialization || 'No Specialization'})</option>
                                     ))}
                                 </select>
                             </div>

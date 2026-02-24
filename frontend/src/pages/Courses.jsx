@@ -5,7 +5,7 @@ import { BookOpen, Calendar, CreditCard, Search, Filter, X, Clock } from 'lucide
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../components/ui/Toast';
 import Loader from '../components/ui/Loader';
-import { motion } from 'framer-motion';
+
 
 export default function Courses() {
   const [courses, setCourses] = useState([]);
@@ -21,10 +21,12 @@ export default function Courses() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    const fetchCourses = async () => {
+    async function fetchCourses() {
       try {
         const res = await axios.get('/courses');
-        setCourses(res.data);
+        if (Array.isArray(res.data)) {
+          setCourses(res.data);
+        }
       } catch (err) {
         console.error("Failed to fetch courses", err);
         addToast('Failed to load courses', 'error');
@@ -42,7 +44,7 @@ export default function Courses() {
     setIsModalOpen(true);
   };
 
-  const confirmBooking = async (e) => {
+  async function confirmBooking(e) {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
@@ -60,19 +62,21 @@ export default function Courses() {
     }
   };
 
-  const handleBuyNow = (courseId) => {
+  const handleBookCourse = (courseId) => {
     if (!user) return navigate('/login');
-    if (user.role !== 'student') return addToast('Only students can purchase courses.', 'error');
-    navigate(`/payment?courseId=${courseId}`);
+    if (user.role !== 'student') return addToast('Only students can book courses.', 'error');
+    // For now, since it's direct booking without payment, we can just confirmed it or go to a booking detail page
+    // Here we'll treat it as a direct "Enrollment" for now or a visit request
+    addToast('Course Booking Request Sent!', 'success');
   };
 
-  const filteredCourses = courses.filter(course => {
+  const filteredCourses = (Array.isArray(courses) ? courses : []).filter(course => {
     const matchesSearch = course.title?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filter === 'All' || course.subject === filter;
     return matchesSearch && matchesFilter;
   });
 
-  const subjects = ['All', ...new Set(courses.filter(c => c.subject).map(c => c.subject))];
+  const subjects = ['All', ...new Set((Array.isArray(courses) ? courses : []).filter(c => c.subject).map(c => c.subject))];
 
   return (
     <div className="container mx-auto p-6 md:p-12 min-h-screen">
@@ -139,11 +143,8 @@ export default function Courses() {
                 <h3 className="text-2xl font-bold mb-3 text-gray-800 group-hover:text-blue-600 transition">{course.title}</h3>
                 <p className="text-gray-600 text-sm mb-6 line-clamp-3 leading-relaxed flex-grow">{course.description}</p>
 
-                <div className="flex items-end justify-between mb-6">
-                  <div>
-                    <p className="text-xs text-gray-400 uppercase font-bold">Price</p>
-                    <span className="text-3xl font-bold text-gray-900">₹{course.price}</span>
-                  </div>
+                <div className="flex items-center gap-2 mb-6 text-gray-400 text-xs font-bold uppercase tracking-tighter">
+                  <Clock size={14} /> <span>{course.duration ? `${course.duration} mins` : 'Flexible Duration'}</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -154,10 +155,10 @@ export default function Courses() {
                     <Calendar size={18} /> Demo
                   </button>
                   <button
-                    onClick={() => handleBuyNow(course.id)}
+                    onClick={() => handleBookCourse(course.id)}
                     className="bg-blue-600 text-white py-2.5 rounded-xl font-bold hover:bg-blue-700 flex items-center justify-center gap-2 text-sm shadow-lg shadow-blue-200 transition"
                   >
-                    <CreditCard size={18} /> Buy Now
+                    <BookOpen size={18} /> Book Course
                   </button>
                 </div>
               </div>

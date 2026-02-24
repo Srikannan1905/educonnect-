@@ -39,6 +39,7 @@ exports.register = async (req, res) => {
             email,
             password: hashedPassword,
             role: role || 'student', // Default to student
+            status: (role === 'staff') ? 'pending' : 'active', // Staff must be pending, students active
             parentName,
             parentPhone
         });
@@ -113,12 +114,12 @@ exports.login = async (req, res) => {
             return res.status(400).json({ message: 'User does not exist' });
         }
 
-        // Check status
-        if (user.status === 'pending') {
-            return res.status(403).json({ message: 'Your account is pending approval by Admin.' });
-        }
-        if (user.status === 'rejected') {
-            return res.status(403).json({ message: 'Your account has been rejected. Contact Admin.' });
+        // Check status for Staff
+        if (user.role === 'staff') {
+            // We allow 'pending' users to login so they can see the 'PendingApproval' status page
+            if (user.status === 'rejected') {
+                return res.status(403).json({ message: 'Your staff account request has been rejected. Please contact Admin.' });
+            }
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
@@ -139,6 +140,7 @@ exports.login = async (req, res) => {
             },
         });
     } catch (error) {
+        console.error('LOGIN ERROR:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };

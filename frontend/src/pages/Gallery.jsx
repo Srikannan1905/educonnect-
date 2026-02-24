@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { motion } from 'framer-motion';
+
 import Loader from '../components/ui/Loader';
 
 export default function Gallery() {
@@ -9,10 +9,12 @@ export default function Gallery() {
     const [activeTab, setActiveTab] = useState('all');
 
     useEffect(() => {
-        const fetchPhotos = async () => {
+        async function fetchPhotos() {
             try {
                 const res = await axios.get('/gallery');
-                setPhotos(res.data);
+                if (Array.isArray(res.data)) {
+                    setPhotos(res.data);
+                }
             } catch (err) {
                 console.error("Failed to fetch photos", err);
             } finally {
@@ -25,8 +27,8 @@ export default function Gallery() {
     const categories = ['all', 'event', 'facility', 'miscellaneous'];
 
     const filteredPhotos = activeTab === 'all'
-        ? photos
-        : photos.filter(p => p.category === activeTab);
+        ? (Array.isArray(photos) ? photos : [])
+        : (Array.isArray(photos) ? photos : []).filter(p => p.category === activeTab);
 
     return (
         <div className="min-h-screen bg-gray-50 py-12">
@@ -43,8 +45,8 @@ export default function Gallery() {
                             key={cat}
                             onClick={() => setActiveTab(cat)}
                             className={`px-6 py-2 rounded-full font-medium capitalize transition-all duration-300 ${activeTab === cat
-                                    ? 'bg-blue-600 text-white shadow-lg scale-105'
-                                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                ? 'bg-blue-600 text-white shadow-lg scale-105'
+                                : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
                                 }`}
                         >
                             {cat}

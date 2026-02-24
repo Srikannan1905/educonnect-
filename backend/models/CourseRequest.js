@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const Course = sequelize.define('Course', {
+const CourseRequest = sequelize.define('CourseRequest', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -11,12 +11,12 @@ const Course = sequelize.define('Course', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    board: {
-        type: DataTypes.ENUM('CBSE', 'TN', 'ICSE', 'Other'),
-        allowNull: false,
-    },
     subject: {
         type: DataTypes.STRING,
+        allowNull: false,
+    },
+    board: {
+        type: DataTypes.ENUM('CBSE', 'TN', 'ICSE', 'Other'),
         allowNull: false,
     },
     mode: {
@@ -26,25 +26,16 @@ const Course = sequelize.define('Course', {
     description: {
         type: DataTypes.TEXT,
     },
-    price: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: true,
-        defaultValue: 0
-    },
-    duration: {
-        type: DataTypes.INTEGER, // Duration in minutes. Null = Lifetime
-        allowNull: true,
-    },
-    thumbnail: {
-        type: DataTypes.STRING,
-        allowNull: true,
+    status: {
+        type: DataTypes.ENUM('pending', 'approved', 'rejected'),
+        defaultValue: 'pending',
     },
     staffId: {
         type: DataTypes.UUID,
-        allowNull: true, // Can be null if admin creates it without assigning immediately
+        allowNull: false,
     }
 }, {
     timestamps: true,
 });
 
-module.exports = Course;
+module.exports = CourseRequest;

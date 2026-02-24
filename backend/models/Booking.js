@@ -23,6 +23,18 @@ const Booking = sequelize.define('Booking', {
         type: DataTypes.ENUM('pending', 'confirmed', 'cancelled'),
         defaultValue: 'pending',
     },
+    staffId: {
+        type: DataTypes.UUID,
+        allowNull: true, // Link to the tutor/staff
+    },
+    subject: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    isFree: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
 }, {
     timestamps: true,
 });

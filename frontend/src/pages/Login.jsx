@@ -9,7 +9,7 @@ export default function Login() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
+    async function handleLogin(e) {
         e.preventDefault();
         setError('');
         try {
@@ -19,8 +19,14 @@ export default function Login() {
             localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(user));
 
-            if (user.role === 'admin' || user.role === 'staff') {
+            if (user.role === 'admin') {
                 navigate('/dashboard');
+            } else if (user.role === 'staff') {
+                if (user.status === 'pending') {
+                    navigate('/pending-approval');
+                } else {
+                    navigate('/dashboard');
+                }
             } else {
                 navigate('/courses');
             }

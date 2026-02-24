@@ -7,7 +7,7 @@ export default function Footer() {
     const [company, setCompany] = useState(null);
 
     useEffect(() => {
-        const fetchSettings = async () => {
+        async function fetchSettings() {
             try {
                 const res = await axios.get('http://localhost:5000/api/company');
                 setCompany(res.data);

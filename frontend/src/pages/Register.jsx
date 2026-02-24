@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { User, Mail, Lock, ArrowRight, CheckCircle, Shield } from 'lucide-react';
-import { motion } from 'framer-motion';
+
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -20,7 +20,7 @@ export default function Register() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleRegister = async (e) => {
+    async function handleRegister(e) {
         e.preventDefault();
         setError('');
 

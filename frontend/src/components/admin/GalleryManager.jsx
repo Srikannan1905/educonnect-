@@ -7,18 +7,23 @@ export default function GalleryManager() {
     const [file, setFile] = useState(null);
     const [title, setTitle] = useState('');
     const [uploading, setUploading] = useState(false);
+    const [user, setUser] = useState(null);
 
     const [activeTab, setActiveTab] = useState('all');
     const [category, setCategory] = useState('miscellaneous');
 
     useEffect(() => {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) setUser(JSON.parse(storedUser));
         fetchPhotos();
     }, []);
 
-    const fetchPhotos = async () => {
+    async function fetchPhotos() {
         try {
             const res = await axios.get('/gallery');
-            setPhotos(res.data);
+            if (Array.isArray(res.data)) {
+                setPhotos(res.data);
+            }
         } catch (err) {
             console.error(err);
         }
@@ -31,21 +36,21 @@ export default function GalleryManager() {
 
     // Filter photos based on active tab
     const filteredPhotos = activeTab === 'all'
-        ? photos
-        : photos.filter(p => p.category === activeTab);
+        ? (Array.isArray(photos) ? photos : [])
+        : (Array.isArray(photos) ? photos : []).filter(p => p.category === activeTab);
 
-    const handleDelete = async (id) => {
+    async function handleDelete(id) {
         if (confirm('Delete this photo?')) {
             try {
                 await axios.delete(`/gallery/${id}`, getAuthHeader());
                 fetchPhotos();
-            } catch (err) {
+            } catch {
                 alert('Failed to delete photo');
             }
         }
     };
 
-    const handleUpload = async (e) => {
+    async function handleUpload(e) {
         e.preventDefault();
         if (!file) return;
 
@@ -71,7 +76,7 @@ export default function GalleryManager() {
             setTitle('');
             setCategory('miscellaneous');
             fetchPhotos();
-        } catch (err) {
+        } catch {
             alert('Upload failed');
         } finally {
             setUploading(false);
@@ -104,50 +109,52 @@ export default function GalleryManager() {
             </div>
 
             {/* Upload Section */}
-            <div className="bg-white p-6 rounded-lg shadow mb-8">
-                <h3 className="font-bold mb-4 flex items-center gap-2"><Upload size={20} /> Upload New Photo</h3>
-                <form onSubmit={handleUpload} className="flex flex-col md:flex-row gap-4 items-end">
-                    <div className="flex-1 w-full">
-                        <label className="block text-sm font-medium mb-1">Photo Title</label>
-                        <input
-                            type="text"
-                            className="w-full p-2 border rounded"
-                            value={title}
-                            onChange={e => setTitle(e.target.value)}
-                            placeholder="e.g., Annual Sports Day"
-                        />
-                    </div>
-                    <div className="flex-1 w-full">
-                        <label className="block text-sm font-medium mb-1">Category</label>
-                        <select
-                            className="w-full p-2 border rounded"
-                            value={category}
-                            onChange={e => setCategory(e.target.value)}
+            {user?.role === 'admin' && (
+                <div className="bg-white p-6 rounded-lg shadow mb-8">
+                    <h3 className="font-bold mb-4 flex items-center gap-2"><Upload size={20} /> Upload New Photo</h3>
+                    <form onSubmit={handleUpload} className="flex flex-col md:flex-row gap-4 items-end">
+                        <div className="flex-1 w-full">
+                            <label className="block text-sm font-medium mb-1">Photo Title</label>
+                            <input
+                                type="text"
+                                className="w-full p-2 border rounded"
+                                value={title}
+                                onChange={e => setTitle(e.target.value)}
+                                placeholder="e.g., Annual Sports Day"
+                            />
+                        </div>
+                        <div className="flex-1 w-full">
+                            <label className="block text-sm font-medium mb-1">Category</label>
+                            <select
+                                className="w-full p-2 border rounded"
+                                value={category}
+                                onChange={e => setCategory(e.target.value)}
+                            >
+                                {categories.map(cat => (
+                                    <option key={cat} value={cat} className="capitalize">{cat}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="flex-1 w-full">
+                            <label className="block text-sm font-medium mb-1">Select Image</label>
+                            <input
+                                type="file"
+                                className="w-full p-2 border rounded bg-gray-50"
+                                onChange={e => setFile(e.target.files[0])}
+                                accept="image/*"
+                                required
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            disabled={uploading}
+                            className="bg-blue-600 text-white px-6 py-2.5 rounded font-bold hover:bg-blue-700 disabled:opacity-50 w-full md:w-auto"
                         >
-                            {categories.map(cat => (
-                                <option key={cat} value={cat} className="capitalize">{cat}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="flex-1 w-full">
-                        <label className="block text-sm font-medium mb-1">Select Image</label>
-                        <input
-                            type="file"
-                            className="w-full p-2 border rounded bg-gray-50"
-                            onChange={e => setFile(e.target.files[0])}
-                            accept="image/*"
-                            required
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        disabled={uploading}
-                        className="bg-blue-600 text-white px-6 py-2.5 rounded font-bold hover:bg-blue-700 disabled:opacity-50 w-full md:w-auto"
-                    >
-                        {uploading ? 'Uploading...' : 'Upload'}
-                    </button>
-                </form>
-            </div>
+                            {uploading ? 'Uploading...' : 'Upload'}
+                        </button>
+                    </form>
+                </div>
+            )}
 
             {/* Grid View */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -162,12 +169,14 @@ export default function GalleryManager() {
                             <p className="font-medium text-sm truncate">{photo.title || 'Untitled'}</p>
                             <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full capitalize">{photo.category}</span>
                         </div>
-                        <button
-                            onClick={() => handleDelete(photo.id)}
-                            className="absolute top-2 right-2 bg-red-600 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition hover:bg-red-700"
-                        >
-                            <Trash2 size={16} />
-                        </button>
+                        {user?.role === 'admin' && (
+                            <button
+                                onClick={() => handleDelete(photo.id)}
+                                className="absolute top-2 right-2 bg-red-600 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition hover:bg-red-700"
+                            >
+                                <Trash2 size={16} />
+                            </button>
+                        )}
                     </div>
                 ))}
                 {filteredPhotos.length === 0 && (

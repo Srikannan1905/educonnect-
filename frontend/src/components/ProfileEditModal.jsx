@@ -46,7 +46,7 @@ export default function ProfileEditModal({ isOpen, onClose, currentUser, onUpdat
         }
     };
 
-    const handleSubmit = async (e) => {
+    async function handleSubmit(e) {
         e.preventDefault();
         setLoading(true);
         setError('');

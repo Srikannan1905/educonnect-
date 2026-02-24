@@ -12,7 +12,7 @@ export default function UserManager({ role }) {
         fetchUsers();
     }, [role]);
 
-    const fetchUsers = async () => {
+    async function fetchUsers() {
         setLoading(true);
         setError('');
         try {
@@ -23,7 +23,9 @@ export default function UserManager({ role }) {
                 headers: { Authorization: `Bearer ${token}` }
             });
             console.log(`[DEBUG] Users received:`, res.data);
-            setUsers(res.data);
+            if (Array.isArray(res.data)) {
+                setUsers(res.data);
+            }
         } catch (err) {
             console.error(err);
             setError(err.response?.data?.message || err.message || 'Failed to fetch users');
@@ -32,7 +34,7 @@ export default function UserManager({ role }) {
         }
     };
 
-    const handleDelete = async (id) => {
+    async function handleDelete(id) {
         if (confirm('Are you sure you want to delete this user?')) {
             try {
                 const token = localStorage.getItem('token');
@@ -65,7 +67,7 @@ export default function UserManager({ role }) {
         setIsModalOpen(true);
     };
 
-    const handleUpdate = async (e) => {
+    async function handleUpdate(e) {
         e.preventDefault();
         setUploading(true);
         let profileImageUrl = formData.profileImage;
@@ -80,7 +82,7 @@ export default function UserManager({ role }) {
                     headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
                 });
                 profileImageUrl = uploadRes.data;
-            } catch (err) {
+            } catch {
                 alert('Failed to upload image');
                 setUploading(false);
                 return;
@@ -100,7 +102,7 @@ export default function UserManager({ role }) {
             });
             setIsModalOpen(false);
             fetchUsers();
-        } catch (err) {
+        } catch {
             alert('Failed to update user');
         } finally {
             setUploading(false);
@@ -135,7 +137,7 @@ export default function UserManager({ role }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {users.map((user) => (
+                        {(Array.isArray(users) ? users : []).map((user) => (
                             <tr key={user.id} className="border-b hover:bg-gray-50">
                                 <td className="p-4 font-medium flex items-center gap-3">
                                     {user.profileImage ? (

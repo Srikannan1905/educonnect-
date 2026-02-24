@@ -25,13 +25,9 @@ export default function PaymentPage() {
         setCardDetails({ ...cardDetails, [e.target.name]: e.target.value });
     };
 
-    useEffect(() => {
-        if (courseId) {
-            fetchCourse();
-        }
-    }, [courseId]);
 
-    const fetchCourse = async () => {
+
+    async function fetchCourse() {
         try {
             const res = await axios.get(`/courses/${courseId}`);
             setCourse(res.data);
@@ -40,7 +36,13 @@ export default function PaymentPage() {
         }
     };
 
-    const handlePayment = async (e) => {
+    useEffect(() => {
+        if (courseId) {
+            fetchCourse();
+        }
+    }, [courseId]);
+
+    async function handlePayment(e) {
         e.preventDefault();
         setLoading(true);
 
@@ -87,7 +89,9 @@ export default function PaymentPage() {
                 }
                 const errorMessage = err.response?.data?.message || 'Payment Failed';
                 const errorDetail = err.response?.data?.error || '';
-                const validationErrors = err.response?.data?.details?.errors?.map(e => e.message).join('\n') || '';
+                const validationErrors = Array.isArray(err.response?.data?.details?.errors)
+                    ? err.response.data.details.errors.map(e => e.message).join('\n')
+                    : '';
                 alert(`Error: ${errorMessage}\n${errorDetail}\n${validationErrors}`);
                 setLoading(false);
             }

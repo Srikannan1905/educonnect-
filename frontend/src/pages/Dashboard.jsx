@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Save, LogOut, LayoutDashboard, Users, BookOpen, Image, Settings, CreditCard, Menu, X, Bell, Check, UserPlus, User, FileText, Award, Upload, ExternalLink, Briefcase, ChevronRight, Plus, Calendar, MessageCircle } from 'lucide-react';
+import { Save, LogOut, LayoutDashboard, Users, BookOpen, Image, Settings, CreditCard, Menu, X, Bell, Check, UserPlus, User, FileText, Award, Upload, ExternalLink, Briefcase, ChevronRight, Plus, Calendar, MessageCircle, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import CourseManager from '../components/admin/CourseManager';

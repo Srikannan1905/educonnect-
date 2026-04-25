@@ -9,33 +9,40 @@
 
 @layer base {
     body {
-        @apply bg-[#f8fafc] text-brand-dark antialiased;
+        @apply bg-[#0b0f19] text-slate-100 antialiased;
         font-family: 'Inter', system-ui, -apple-system, sans-serif;
     }
 }
 
 @layer utilities {
     .glass-card {
-        @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-glass;
+        @apply bg-[#1e293b]/50 backdrop-blur-xl border border-white/10 shadow-glass;
     }
 
     .glass-sidebar {
-        @apply bg-[#0f172a]/95 backdrop-blur-2xl border-r border-white/10;
+        @apply bg-[#0b0f19]/95 backdrop-blur-2xl border-r border-white/10;
     }
 
     .glass-morphism {
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba(30, 41, 59, 0.4);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .text-glow {
-        text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        text-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
     }
 
     .bg-dashboard-grid {
-        background-image: radial-gradient(circle at 2px 2px, rgba(0, 0, 0, 0.02) 1px, transparent 0);
+        background-color: #0b0f19;
+        background-image: radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+        background-size: 24px 24px;
+    }
+
+    .bg-dark-grid {
+        background-color: #0b0f19;
+        background-image: radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
         background-size: 24px 24px;
     }
 
@@ -54,5 +61,22 @@
         50% {
             background-position: 100% 50%;
         }
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #0b1121;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(16, 185, 129, 0.2);
+        border-radius: 9999px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(16, 185, 129, 0.4);
     }
 }

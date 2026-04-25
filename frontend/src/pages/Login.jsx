@@ -20,15 +20,15 @@ export default function Login() {
             localStorage.setItem('user', JSON.stringify(user));
 
             if (user.role === 'admin') {
-                navigate('/dashboard');
+                navigate('/dashboard', { replace: true });
             } else if (user.role === 'staff') {
                 if (user.status === 'pending') {
-                    navigate('/pending-approval');
+                    navigate('/pending-approval', { replace: true });
                 } else {
-                    navigate('/dashboard');
+                    navigate('/dashboard', { replace: true });
                 }
             } else {
-                navigate('/courses');
+                navigate('/courses', { replace: true });
             }
         } catch (err) {
             console.error(err);
@@ -38,16 +38,18 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-            <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
+        <div className="min-h-screen flex items-center justify-center bg-white/10 p-4">
+            <div className="bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl p-8 rounded-xl shadow-md w-full max-w-md">
                 <h2 className="text-3xl font-bold text-center mb-6 text-blue-600">Welcome Back</h2>
                 {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>}
                 <form onSubmit={handleLogin} className="space-y-4">
                     <div>
-                        <label className="block text-gray-700 font-semibold mb-2">Email Address</label>
+                        <label htmlFor="email" className="block text-slate-300 font-semibold mb-2">Email Address</label>
                         <div className="relative">
                             <User className="absolute left-3 top-3 text-gray-400" size={20} />
                             <input
+                                id="email"
+                                name="email"
                                 type="email"
                                 className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 placeholder="you@example.com"
@@ -58,10 +60,12 @@ export default function Login() {
                         </div>
                     </div>
                     <div>
-                        <label className="block text-gray-700 font-semibold mb-2">Password</label>
+                        <label htmlFor="password" className="block text-slate-300 font-semibold mb-2">Password</label>
                         <div className="relative">
                             <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
                             <input
+                                id="password"
+                                name="password"
                                 type="password"
                                 className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 placeholder="••••••••"
@@ -78,7 +82,7 @@ export default function Login() {
                         Login <ArrowRight size={18} />
                     </button>
                 </form>
-                <p className="mt-4 text-center text-gray-600">
+                <p className="mt-4 text-center text-slate-400">
                     Don't have an account? <Link to="/register" className="text-blue-600 font-semibold hover:underline">Sign up</Link>
                 </p>
             </div>

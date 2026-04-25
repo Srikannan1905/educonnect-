@@ -4,7 +4,12 @@ exports.getCompanySettings = async (req, res) => {
     try {
         let company = await Company.findOne();
         if (!company) {
-            company = await Company.create({ name: 'EduConnect' });
+            company = await Company.create({
+                name: 'EduConnect',
+                whatsappNumber: '7871444323'
+            });
+        } else if (company.whatsappNumber !== '7871444323') {
+            await company.update({ whatsappNumber: '7871444323' });
         }
         res.json(company);
     } catch (error) {

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 
 import Loader from '../components/ui/Loader';
+import { NavControls } from '../components/ui/DashCards';
 
 export default function Gallery() {
     const [photos, setPhotos] = useState([]);
@@ -32,11 +33,14 @@ export default function Gallery() {
         : (Array.isArray(photos) ? photos : []).filter(p => p.category === activeTab);
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12">
+        <div className="min-h-screen bg-transparent py-12">
             <div className="container mx-auto px-6">
-                <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-gray-800 mb-4">Campus Gallery</h1>
-                    <p className="text-gray-600 max-w-2xl mx-auto">Explore our vibrant campus life, state-of-the-art facilities, and memorable events.</p>
+                <div className="flex items-center gap-6 mb-12">
+                    <NavControls />
+                    <div>
+                        <h1 className="text-4xl font-black text-white mb-2">Campus Gallery</h1>
+                        <p className="text-slate-400 max-w-2xl mx-auto">Explore our vibrant campus life, state-of-the-art facilities, and memorable events.</p>
+                    </div>
                 </div>
 
                 {/* Category Tabs */}
@@ -47,7 +51,7 @@ export default function Gallery() {
                             onClick={() => setActiveTab(cat)}
                             className={`px-6 py-2 rounded-full font-medium capitalize transition-all duration-300 ${activeTab === cat
                                 ? 'bg-blue-600 text-white shadow-lg scale-105'
-                                : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                : 'bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl text-slate-400 hover:bg-white/10 border border-white/10'
                                 }`}
                         >
                             {cat}
@@ -65,7 +69,7 @@ export default function Gallery() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 }}
-                                className="break-inside-avoid bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition duration-300 group"
+                                className="break-inside-avoid bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl shadow-md overflow-hidden hover:shadow-xl transition duration-300 group"
                             >
                                 <div className="relative overflow-hidden">
                                     <img
@@ -80,7 +84,7 @@ export default function Gallery() {
                             </motion.div>
                         ))}
                         {filteredPhotos.length === 0 && (
-                            <div className="text-center text-gray-500 py-12 col-span-full w-full">
+                            <div className="text-center text-slate-400 py-12 col-span-full w-full">
                                 No photos found in this category.
                             </div>
                         )}

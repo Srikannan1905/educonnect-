@@ -30,6 +30,9 @@ const Company = sequelize.define('Company', {
     twitterUrl: {
         type: DataTypes.STRING,
     },
+    youtubeUrl: {
+        type: DataTypes.STRING,
+    },
     googleMapEmbedUrl: {
         type: DataTypes.TEXT,
     },

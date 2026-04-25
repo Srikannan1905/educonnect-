@@ -75,8 +75,24 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         allowNull: true, // Comma separated subjects e.g. "Computer, Mathematics"
     },
+    resetPasswordToken: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    registrationId: {
+        type: DataTypes.STRING,
+        unique: true,
+    },
 }, {
     timestamps: true,
+    hooks: {
+        beforeCreate: async (user) => {
+            const year = new Date().getFullYear();
+            const prefix = user.role === 'staff' ? 'STF' : 'STU';
+            const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+            user.registrationId = `EC-${prefix}-${year}-${random}`;
+        }
+    }
 });
 
 module.exports = User;

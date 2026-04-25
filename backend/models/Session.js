@@ -19,6 +19,10 @@ const Session = sequelize.define('Session', {
         type: DataTypes.STRING, // Store as string for easier formatting or use TIME if DB supports
         allowNull: false,
     },
+    studentId: {
+        type: DataTypes.UUID,
+        allowNull: true, // Null for group classes (linked by courseId)
+    },
     meetingLink: {
         type: DataTypes.STRING,
         allowNull: true,

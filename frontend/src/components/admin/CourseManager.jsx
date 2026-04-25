@@ -178,9 +178,9 @@ export default function CourseManager() {
                 )}
             </div>
 
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl rounded-lg overflow-x-auto shadow">
                 <table className="w-full text-left">
-                    <thead className="bg-gray-100 border-b">
+                    <thead className="bg-white/10 border-b border-white/10">
                         <tr>
                             <th className="p-4">Title</th>
                             <th className="p-4">Subject</th>
@@ -191,7 +191,7 @@ export default function CourseManager() {
                     </thead>
                     <tbody>
                         {(Array.isArray(courses) ? courses : []).map((course) => (
-                            <tr key={course.id} className="border-b hover:bg-gray-50">
+                            <tr key={course.id} className="border-b border-white/10 border-white/10 hover:bg-white/10">
                                 <td className="p-4 font-medium">{course.title}</td>
                                 <td className="p-4">{course.subject}</td>
                                 <td className="p-4">{course.board}</td>
@@ -213,14 +213,14 @@ export default function CourseManager() {
             </div>
 
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl p-6 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-xl font-bold">{currentCourse ? 'Edit Course' : 'Add Course'}</h3>
-                            <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-black"><X size={24} /></button>
+                            <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-black"><X size={24} /></button>
                         </div>
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            <input type="text" placeholder="Course Title" required className="w-full p-2 border rounded" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
+                            <input type="text" placeholder="Course Title" required className="w-full p-2 border rounded bg-[#172033] text-white border-white/10" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
 
                             {/* Thumbnail Upload */}
                             <div>
@@ -228,18 +228,18 @@ export default function CourseManager() {
                                 <input
                                     type="file"
                                     accept="image/*"
-                                    className="w-full p-2 border rounded bg-gray-50"
+                                    className="w-full p-2 border rounded bg-transparent"
                                     onChange={e => setFormData({ ...formData, file: e.target.files[0] })}
                                 />
                                 {formData.thumbnail && !formData.file && (
-                                    <div className="mt-2 text-xs text-gray-500">Current: {formData.thumbnail}</div>
+                                    <div className="mt-2 text-xs text-slate-400">Current: {formData.thumbnail}</div>
                                 )}
                             </div>
 
                             {/* Center Selection */}
                             <div>
                                 <label className="block text-sm font-medium mb-1">Center</label>
-                                <select className="w-full p-2 border rounded" value={formData.centerId} onChange={e => setFormData({ ...formData, centerId: e.target.value })} required>
+                                <select className="w-full p-2 border rounded bg-[#172033] text-white border-white/10" value={formData.centerId} onChange={e => setFormData({ ...formData, centerId: e.target.value })} required>
                                     <option value="">Select Center</option>
                                     {(Array.isArray(centers) ? centers : []).map(center => (
                                         <option key={center.id} value={center.id}>{center.name}</option>
@@ -250,7 +250,7 @@ export default function CourseManager() {
                             {/* Instructor Selection */}
                             <div>
                                 <label className="block text-sm font-medium mb-1">Instructor (Optional)</label>
-                                <select className="w-full p-2 border rounded" value={formData.staffId} onChange={e => setFormData({ ...formData, staffId: e.target.value })}>
+                                <select className="w-full p-2 border rounded bg-[#172033] text-white border-white/10" value={formData.staffId} onChange={e => setFormData({ ...formData, staffId: e.target.value })}>
                                     <option value="">Unassigned</option>
                                     {staff.map(s => (
                                         <option key={s.id} value={s.id}>{s.name} ({s.specialization || 'No Specialization'})</option>
@@ -259,28 +259,28 @@ export default function CourseManager() {
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
-                                <input type="text" placeholder="Subject" required className="w-full p-2 border rounded" value={formData.subject} onChange={e => setFormData({ ...formData, subject: e.target.value })} />
-                                <input type="number" placeholder="Price (₹)" className="w-full p-2 border rounded" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} />
+                                <input type="text" placeholder="Subject" required className="w-full p-2 border rounded bg-[#172033] text-white border-white/10" value={formData.subject} onChange={e => setFormData({ ...formData, subject: e.target.value })} />
+                                <input type="number" placeholder="Price (₹)" className="w-full p-2 border rounded bg-[#172033] text-white border-white/10" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium mb-1">Duration (Minutes)</label>
                                 <input
                                     type="number"
                                     placeholder="e.g., 60 (Leave empty for Lifetime)"
-                                    className="w-full p-2 border rounded"
+                                    className="w-full p-2 border rounded bg-[#172033] text-white border-white/10"
                                     value={formData.duration}
                                     onChange={e => setFormData({ ...formData, duration: e.target.value })}
                                 />
-                                <p className="text-xs text-gray-500 mt-1">Set to <b>60</b> for 1 hour access. Users can repurchase after expiry.</p>
+                                <p className="text-xs text-slate-400 mt-1">Set to <b>60</b> for 1 hour access. Users can repurchase after expiry.</p>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
-                                <select className="w-full p-2 border rounded" value={formData.board} onChange={e => setFormData({ ...formData, board: e.target.value })}>
+                                <select className="w-full p-2 border rounded bg-[#172033] text-white border-white/10" value={formData.board} onChange={e => setFormData({ ...formData, board: e.target.value })}>
                                     <option value="CBSE">CBSE</option>
                                     <option value="ICSE">ICSE</option>
                                     <option value="TN">State Board</option>
                                     <option value="Other">Other</option>
                                 </select>
-                                <select className="w-full p-2 border rounded" value={formData.mode} onChange={e => setFormData({ ...formData, mode: e.target.value })}>
+                                <select className="w-full p-2 border rounded bg-[#172033] text-white border-white/10" value={formData.mode} onChange={e => setFormData({ ...formData, mode: e.target.value })}>
                                     <option value="online">Online</option>
                                     <option value="offline">Offline</option>
                                 </select>

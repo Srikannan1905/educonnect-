@@ -25,7 +25,7 @@ export const ToastProvider = ({ children }) => {
     return (
         <ToastContext.Provider value={{ addToast }}>
             {children}
-            <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+            <div className="fixed bottom-24 right-4 z-50 flex flex-col gap-2">
                 <AnimatePresence>
                     {toasts.map(toast => (
                         <Toast key={toast.id} {...toast} onClose={() => removeToast(toast.id)} />
@@ -44,9 +44,9 @@ const Toast = ({ message, type, onClose }) => {
     };
 
     const bgColors = {
-        success: 'bg-green-50 border-green-200',
-        error: 'bg-red-50 border-red-200',
-        info: 'bg-blue-50 border-blue-200'
+        success: 'bg-[#1e293b]/90 backdrop-blur-xl border-green-500/30 shadow-glass',
+        error: 'bg-[#1e293b]/90 backdrop-blur-xl border-red-500/30 shadow-glass',
+        info: 'bg-[#1e293b]/90 backdrop-blur-xl border-blue-500/30 shadow-glass'
     };
 
     return (
@@ -58,7 +58,7 @@ const Toast = ({ message, type, onClose }) => {
             className={`flex items-center gap-3 p-4 rounded-lg shadow-lg border min-w-[300px] ${bgColors[type] || bgColors.info} relative overflow-hidden`}
         >
             {icons[type] || icons.info}
-            <p className="text-sm font-medium text-gray-800 flex-1">{message}</p>
+            <p className="text-sm font-medium text-slate-200 flex-1">{message}</p>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition">
                 <X size={16} />
             </button>

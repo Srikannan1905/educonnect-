@@ -17,12 +17,10 @@ export default function UserManager({ role }) {
         setError('');
         try {
             const url = role ? `/users?role=${role}` : '/users';
-            console.log(`[DEBUG] Fetching users from ${url}`);
             const token = localStorage.getItem('token');
             const res = await axios.get(url, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            console.log(`[DEBUG] Users received:`, res.data);
             if (Array.isArray(res.data)) {
                 setUsers(res.data);
             }
@@ -109,7 +107,7 @@ export default function UserManager({ role }) {
         }
     };
 
-    if (loading) return <div className="p-8 text-center text-gray-500">Loading users...</div>;
+    if (loading) return <div className="p-8 text-center text-slate-400">Loading users...</div>;
     if (error) return (
         <div className="p-8 text-center">
             <div className="text-red-500 mb-2">Error: {error}</div>
@@ -126,9 +124,9 @@ export default function UserManager({ role }) {
                 </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl rounded-lg overflow-x-auto shadow">
                 <table className="w-full text-left">
-                    <thead className="bg-gray-100 border-b">
+                    <thead className="bg-white/10 border-b border-white/10">
                         <tr>
                             <th className="p-4">Name</th>
                             <th className="p-4">Email</th>
@@ -138,7 +136,7 @@ export default function UserManager({ role }) {
                     </thead>
                     <tbody>
                         {(Array.isArray(users) ? users : []).map((user) => (
-                            <tr key={user.id} className="border-b hover:bg-gray-50">
+                            <tr key={user.id} className="border-b border-white/10 border-white/10 hover:bg-white/10">
                                 <td className="p-4 font-medium flex items-center gap-3">
                                     {user.profileImage ? (
                                         <img src={`http://localhost:5000${user.profileImage}`} alt={user.name} className="w-10 h-10 rounded-full object-cover" />
@@ -147,17 +145,17 @@ export default function UserManager({ role }) {
                                     )}
                                     <div>
                                         <div className="font-semibold">{user.name}</div>
-                                        {user.phone && <div className="text-xs text-gray-500">{user.phone}</div>}
+                                        {user.phone && <div className="text-xs text-slate-400">{user.phone}</div>}
                                     </div>
                                 </td>
-                                <td className="p-4 text-gray-600">
+                                <td className="p-4 text-slate-400">
                                     {user.email}
                                     {user.qualification && <div className="text-xs text-gray-400 mt-1">{user.qualification}</div>}
                                 </td>
                                 {!role && (
                                     <td className="p-4">
                                         <span className={`px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1 w-fit ${user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
-                                            user.role === 'staff' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                                            user.role === 'staff' ? 'bg-blue-100 text-blue-800' : 'bg-white/10 text-slate-200'
                                             }`}>
                                             {user.role === 'admin' && <Shield size={12} />}
                                             {user.role}
@@ -180,13 +178,12 @@ export default function UserManager({ role }) {
                         ))}
                     </tbody>
                 </table>
-                {users.length === 0 && <div className="p-8 text-center text-gray-500">No {role || 'users'} found.</div>}
+                {users.length === 0 && <div className="p-8 text-center text-slate-400">No {role || 'users'} found.</div>}
             </div>
 
-            {/* Edit Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg w-full max-w-md">
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl p-6 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
                         <h3 className="text-xl font-bold mb-4">Edit {currentUser?.role}</h3>
                         <form onSubmit={handleUpdate} className="space-y-4">
                             <div>
@@ -212,15 +209,15 @@ export default function UserManager({ role }) {
                                 <input
                                     type="file"
                                     accept="image/*"
-                                    className="w-full p-2 border rounded bg-gray-50"
+                                    className="w-full p-2 border rounded bg-transparent"
                                     onChange={e => setFormData({ ...formData, file: e.target.files[0] })}
                                 />
                                 {formData.profileImage && !formData.file && (
-                                    <div className="mt-2 text-xs text-gray-500">Current photo available</div>
+                                    <div className="mt-2 text-xs text-slate-400">Current photo available</div>
                                 )}
                             </div>
                             <div className="flex gap-2 justify-end mt-6">
-                                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded">Cancel</button>
+                                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-slate-400 hover:bg-white/10 rounded">Cancel</button>
                                 <button type="submit" disabled={uploading} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
                                     {uploading ? 'Saving...' : 'Save Changes'}
                                 </button>

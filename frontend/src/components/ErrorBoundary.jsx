@@ -18,18 +18,18 @@ class ErrorBoundary extends React.Component {
     render() {
         if (this.state.hasError) {
             return (
-                <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-                    <div className="bg-white p-8 rounded-xl shadow-lg max-w-lg w-full text-center">
+                <div className="min-h-screen flex items-center justify-center bg-transparent p-4">
+                    <div className="bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl p-8 rounded-xl shadow-lg max-w-lg w-full text-center">
                         <div className="flex justify-center mb-4">
                             <div className="bg-red-100 p-4 rounded-full">
                                 <AlertTriangle className="text-red-600" size={48} />
                             </div>
                         </div>
-                        <h1 className="text-2xl font-bold text-gray-800 mb-2">Something went wrong</h1>
-                        <p className="text-gray-600 mb-6">
+                        <h1 className="text-2xl font-bold text-slate-200 mb-2">Something went wrong</h1>
+                        <p className="text-slate-400 mb-6">
                             We encountered an unexpected error. Please try reloading the page.
                         </p>
-                        <div className="bg-gray-100 p-4 rounded text-left overflow-auto max-h-40 mb-6 text-xs font-mono text-gray-700">
+                        <div className="bg-white/10 p-4 rounded text-left overflow-auto max-h-40 mb-6 text-xs font-mono text-slate-300">
                             {this.state.error?.toString()}
                         </div>
                         <button

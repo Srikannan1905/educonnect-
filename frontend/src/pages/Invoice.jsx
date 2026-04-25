@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Printer, Download, ArrowLeft, CheckCircle } from 'lucide-react';
+import { NavControls } from '../components/ui/DashCards';
 
 export default function Invoice() {
     const { paymentId } = useParams();
@@ -35,15 +36,10 @@ export default function Invoice() {
     const { payment, company } = data;
 
     return (
-        <div className="min-h-screen bg-gray-100 py-8 px-4 print:bg-white print:p-0">
+        <div className="min-h-screen bg-white/10 py-8 px-4 print:bg-white print:p-0">
             {/* Action Buttons - Hidden on Print */}
             <div className="max-w-3xl mx-auto mb-6 flex justify-between items-center print:hidden">
-                <button
-                    onClick={() => navigate(-1)}
-                    className="flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium"
-                >
-                    <ArrowLeft size={20} /> Back
-                </button>
+                <NavControls />
                 <button
                     onClick={handlePrint}
                     className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-blue-700 shadow-lg"
@@ -53,12 +49,12 @@ export default function Invoice() {
             </div>
 
             {/* Invoice Container */}
-            <div className="max-w-3xl mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden print:shadow-none print:rounded-none">
+            <div className="max-w-3xl mx-auto bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl shadow-2xl rounded-2xl overflow-hidden print:shadow-none print:rounded-none">
                 {/* Header */}
                 <div className="bg-blue-900 text-white p-8 md:p-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                     <div>
                         <h1 className="text-4xl font-black tracking-tighter mb-1">{company.name}</h1>
-                        <p className="text-blue-200 text-sm font-medium tracking-wide border-b border-blue-800 pb-4 mb-4">Official Receipt of Payment</p>
+                        <p className="text-blue-200 text-sm font-medium tracking-wide border-b border-white/10 border-blue-800 pb-4 mb-4">Official Receipt of Payment</p>
                         <div className="space-y-1 text-xs opacity-90">
                             <p>{company.address}</p>
                             <p>Email: {company.email}</p>
@@ -83,13 +79,13 @@ export default function Invoice() {
                         <div>
                             <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Billed To</h3>
                             <div className="space-y-1">
-                                <p className="text-xl font-bold text-gray-900">{payment.User.name}</p>
-                                <p className="text-gray-500 text-sm">{payment.User.email}</p>
-                                <p className="text-gray-500 text-sm">{payment.User.phone}</p>
-                                <p className="text-gray-500 text-sm whitespace-pre-line">{payment.User.address}</p>
+                                <p className="text-xl font-bold text-white">{payment.User.name}</p>
+                                <p className="text-slate-400 text-sm">{payment.User.email}</p>
+                                <p className="text-slate-400 text-sm">{payment.User.phone}</p>
+                                <p className="text-slate-400 text-sm whitespace-pre-line">{payment.User.address}</p>
                             </div>
                         </div>
-                        <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+                        <div className="bg-transparent rounded-2xl p-6 border border-white/5">
                             <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4 text-center">Payment Status</h3>
                             <div className="flex flex-col items-center justify-center">
                                 <div className="text-green-500 mb-2">
@@ -106,45 +102,45 @@ export default function Invoice() {
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="border-b-2 border-gray-900">
-                                    <th className="py-4 text-xs font-black text-gray-900 uppercase tracking-widest">Description</th>
-                                    <th className="py-4 text-xs font-black text-gray-900 uppercase tracking-widest text-right">Amount</th>
+                                    <th className="py-4 text-xs font-black text-white uppercase tracking-widest">Description</th>
+                                    <th className="py-4 text-xs font-black text-white uppercase tracking-widest text-right">Amount</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr className="border-b border-gray-100">
+                                <tr className="border-b border-white/10 border-white/10 border-white/5">
                                     <td className="py-6">
-                                        <p className="font-bold text-gray-900 text-lg">{payment.Course.title}</p>
-                                        <p className="text-gray-500 text-xs italic mt-1">Full Course Enrollment Access</p>
+                                        <p className="font-bold text-white text-lg">{payment.Course.title}</p>
+                                        <p className="text-slate-400 text-xs italic mt-1">Full Course Enrollment Access</p>
                                     </td>
-                                    <td className="py-6 text-right font-bold text-gray-900 text-lg">₹{parseFloat(payment.amount).toFixed(2)}</td>
+                                    <td className="py-6 text-right font-bold text-white text-lg">₹{parseFloat(payment.amount).toFixed(2)}</td>
                                 </tr>
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <td className="py-6 text-right font-black text-gray-400 uppercase tracking-widest">Total Amount</td>
-                                    <td className="py-6 text-right text-3xl font-black text-blue-900">₹{parseFloat(payment.amount).toFixed(2)}</td>
+                                    <td className="py-6 text-right text-3xl font-black text-blue-300">₹{parseFloat(payment.amount).toFixed(2)}</td>
                                 </tr>
                             </tfoot>
                         </table>
                     </div>
 
                     {/* Footer Info */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-end pt-8 border-t border-gray-100">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-end pt-8 border-t border-white/5">
                         <div>
                             <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Transaction Details</h3>
-                            <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-2">
+                            <div className="bg-transparent p-4 rounded-xl border border-white/5 space-y-2">
                                 <div className="flex justify-between text-xs">
                                     <span className="text-gray-400 font-bold uppercase">Txn ID:</span>
-                                    <span className="font-mono text-gray-900">{payment.transactionId}</span>
+                                    <span className="font-mono text-white">{payment.transactionId}</span>
                                 </div>
                                 <div className="flex justify-between text-xs">
                                     <span className="text-gray-400 font-bold uppercase">Receipt Type:</span>
-                                    <span className="text-gray-900 font-bold uppercase">Electronic Confirmation</span>
+                                    <span className="text-white font-bold uppercase">Electronic Confirmation</span>
                                 </div>
                             </div>
                         </div>
                         <div className="text-center md:text-right space-y-4">
-                            <div className="inline-block p-2 bg-white border border-gray-100 rounded-lg shadow-sm">
+                            <div className="inline-block p-2 bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl border border-white/5 rounded-lg shadow-sm">
                                 {/* Signature Placeholder */}
                                 <div className="w-32 h-12 border-b-2 border-gray-300 italic text-gray-400 flex items-end justify-center pb-1 text-sm">
                                     Authorized Signatory
@@ -155,8 +151,8 @@ export default function Invoice() {
                     </div>
                 </div>
 
-                <div className="bg-gray-50 p-6 text-center">
-                    <p className="text-xs text-gray-500 font-bold uppercase tracking-[0.2em]">Thank you for choosing {company.name}</p>
+                <div className="bg-transparent p-6 text-center">
+                    <p className="text-xs text-slate-400 font-bold uppercase tracking-[0.2em]">Thank you for choosing {company.name}</p>
                 </div>
             </div>
         </div>

@@ -11,15 +11,15 @@ const storage = multer.diskStorage({
 });
 
 function checkFileType(file, cb) {
-    const filetypes = /jpg|jpeg|png|pdf|doc|docx/;
+    const filetypes = /jpg|jpeg|png|pdf|doc|docx|csv/;
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetypes = /image\/jpeg|image\/png|application\/pdf|application\/msword|application\/vnd.openxmlformats-officedocument.wordprocessingml.document/;
+    const mimetypes = /image\/jpeg|image\/png|application\/pdf|application\/msword|application\/vnd.openxmlformats-officedocument.wordprocessingml.document|text\/csv|application\/vnd.ms-excel/;
     const mimetype = mimetypes.test(file.mimetype);
 
     if (extname && mimetype) {
         return cb(null, true);
     } else {
-        cb('Error: Images and Documents (PDF/DOC) only!');
+        cb('Error: Images, Documents (PDF/DOC), and CSV only!');
     }
 }
 

@@ -43,6 +43,8 @@ app.use('/api/upload', require('./routes/uploadRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/invoices', require('./routes/invoiceRoutes'));
 app.use('/api/sessions', require('./routes/sessionRoutes'));
+app.use('/api/quizzes', require('./routes/quizRoutes'));
+app.use('/api/syllabus', require('./routes/syllabusRoutes'));
 
 app.get('/', (req, res) => {
     res.send('API is running...');

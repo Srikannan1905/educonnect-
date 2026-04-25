@@ -99,10 +99,10 @@ export default function ProfileEditModal({ isOpen, onClose, currentUser, onUpdat
 
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-                <div className="flex justify-between items-center p-6 border-b sticky top-0 bg-white z-10">
-                    <h2 className="text-xl font-bold text-gray-800">Edit Profile</h2>
-                    <button onClick={onClose} className="text-gray-500 hover:bg-gray-100 p-2 rounded-full transition">
+            <div className="bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-center p-6 border-b border-white/10 sticky top-0 bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl z-10">
+                    <h2 className="text-xl font-bold text-slate-200">Edit Profile</h2>
+                    <button onClick={onClose} className="text-slate-400 hover:bg-white/10 p-2 rounded-full transition">
                         <X size={24} />
                     </button>
                 </div>
@@ -112,7 +112,7 @@ export default function ProfileEditModal({ isOpen, onClose, currentUser, onUpdat
 
                     <div className="flex justify-center mb-6">
                         <div className="relative group cursor-pointer">
-                            <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-gray-100 shadow-sm bg-gray-50 flex items-center justify-center">
+                            <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white/5 shadow-sm bg-transparent flex items-center justify-center">
                                 {previewImage ? (
                                     <img src={previewImage} alt="Profile" className="w-full h-full object-cover" />
                                 ) : (
@@ -129,7 +129,7 @@ export default function ProfileEditModal({ isOpen, onClose, currentUser, onUpdat
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                <label className="block text-sm font-medium text-slate-300 mb-1">Full Name</label>
                                 <div className="relative">
                                     <User size={18} className="absolute left-3 top-3 text-gray-400" />
                                     <input
@@ -142,21 +142,21 @@ export default function ProfileEditModal({ isOpen, onClose, currentUser, onUpdat
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <label className="block text-sm font-medium text-slate-300 mb-1">Email</label>
                                 <div className="relative">
                                     <Mail size={18} className="absolute left-3 top-3 text-gray-400" />
                                     <input
                                         name="email"
                                         value={formData.email}
                                         onChange={handleChange}
-                                        className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50"
+                                        className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-transparent"
                                         readOnly // Email usually shouldn't be changed easily or requires verification
                                         title="Contact Admin to change email"
                                     />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                <label className="block text-sm font-medium text-slate-300 mb-1">Phone</label>
                                 <div className="relative">
                                     <Phone size={18} className="absolute left-3 top-3 text-gray-400" />
                                     <input
@@ -172,7 +172,7 @@ export default function ProfileEditModal({ isOpen, onClose, currentUser, onUpdat
                             {/* Staff Specific */}
                             {currentUser?.role === 'staff' && (
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Qualification</label>
+                                    <label className="block text-sm font-medium text-slate-300 mb-1">Qualification</label>
                                     <div className="relative">
                                         <GraduationCap size={18} className="absolute left-3 top-3 text-gray-400" />
                                         <input
@@ -189,7 +189,7 @@ export default function ProfileEditModal({ isOpen, onClose, currentUser, onUpdat
                             {currentUser?.role === 'student' && (
                                 <>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Parent Name</label>
+                                        <label className="block text-sm font-medium text-slate-300 mb-1">Parent Name</label>
                                         <input
                                             name="parentName"
                                             value={formData.parentName}
@@ -198,7 +198,7 @@ export default function ProfileEditModal({ isOpen, onClose, currentUser, onUpdat
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Parent Phone</label>
+                                        <label className="block text-sm font-medium text-slate-300 mb-1">Parent Phone</label>
                                         <div className="relative">
                                             <Phone size={18} className="absolute left-3 top-3 text-gray-400" />
                                             <input
@@ -217,7 +217,7 @@ export default function ProfileEditModal({ isOpen, onClose, currentUser, onUpdat
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition"
+                                className="px-4 py-2 text-slate-400 hover:bg-white/10 rounded-lg font-medium transition"
                             >
                                 Cancel
                             </button>

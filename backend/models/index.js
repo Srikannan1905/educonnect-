@@ -10,6 +10,10 @@ const Notification = require('./Notification');
 const Session = require('./Session');
 const CourseRequest = require('./CourseRequest');
 const ActivityLog = require('./ActivityLog');
+const Quiz = require('./Quiz');
+const Question = require('./Question');
+const Assessment = require('./Assessment');
+const Syllabus = require('./Syllabus');
 
 // Associations
 
@@ -44,6 +48,9 @@ Session.belongsTo(Course, { foreignKey: 'courseId' });
 User.hasMany(Session, { foreignKey: 'staffId', as: 'instructorSessions', onDelete: 'CASCADE' });
 Session.belongsTo(User, { foreignKey: 'staffId', as: 'instructor' });
 
+User.hasMany(Session, { foreignKey: 'studentId', as: 'studentSessions', onDelete: 'CASCADE' });
+Session.belongsTo(User, { foreignKey: 'studentId', as: 'student' });
+
 User.hasMany(Course, { foreignKey: 'staffId', as: 'instructorCourses' });
 Course.belongsTo(User, { foreignKey: 'staffId', as: 'instructor' });
 
@@ -58,6 +65,22 @@ CourseRequest.belongsTo(User, { foreignKey: 'staffId', as: 'staff' });
 User.hasMany(ActivityLog, { foreignKey: 'userId', as: 'activities' });
 ActivityLog.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
+// Quiz Associations
+Course.hasMany(Quiz, { foreignKey: 'courseId', onDelete: 'CASCADE' });
+Quiz.belongsTo(Course, { foreignKey: 'courseId' });
+
+User.hasMany(Quiz, { foreignKey: 'staffId', as: 'instructorQuizzes' });
+Quiz.belongsTo(User, { foreignKey: 'staffId', as: 'instructor' });
+
+Quiz.hasMany(Question, { foreignKey: 'quizId', as: 'questions', onDelete: 'CASCADE' });
+Question.belongsTo(Quiz, { foreignKey: 'quizId' });
+
+Quiz.hasMany(Assessment, { foreignKey: 'quizId', onDelete: 'CASCADE' });
+Assessment.belongsTo(Quiz, { foreignKey: 'quizId' });
+
+User.hasMany(Assessment, { foreignKey: 'studentId', as: 'myAssessments', onDelete: 'CASCADE' });
+Assessment.belongsTo(User, { foreignKey: 'studentId', as: 'student' });
+
 module.exports = {
     sequelize,
     User,
@@ -70,5 +93,9 @@ module.exports = {
     Notification,
     Session,
     CourseRequest,
-    ActivityLog
+    ActivityLog,
+    Quiz,
+    Question,
+    Assessment,
+    Syllabus
 };

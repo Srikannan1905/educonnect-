@@ -1,18 +1,30 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Save, LogOut, LayoutDashboard, Users, BookOpen, Image, Settings, CreditCard, Menu, X, Bell, Check, UserPlus, User, FileText, Award, Upload, ExternalLink, Briefcase, ChevronRight, Plus, Calendar, MessageCircle, Info } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Save, LogOut, LayoutDashboard, Users, BookOpen, Image, Settings, CreditCard, Menu, X, Bell, Check, User, FileText, Award, Upload, Briefcase, ChevronRight, Plus, Calendar, MessageCircle, Info, Globe, Send, Trash2, Eye, Shield } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { StatCard, FeatureCard, NavControls } from '../components/ui/DashCards';
 
 import CourseManager from '../components/admin/CourseManager';
 import UserManager from '../components/admin/UserManager';
 import GalleryManager from '../components/admin/GalleryManager';
 import PaymentManager from '../components/admin/PaymentManager';
+import BookingManager from '../components/admin/BookingManager';
 import ProfileEditModal from '../components/ProfileEditModal';
 import SessionManager from '../components/staff/SessionManager';
+import AdminSessionManager from '../components/admin/AdminSessionManager';
+import CompanyManager from './admin/CompanyManager';
+import QuizManagement from './QuizManagement';
+import ActivityManager from '../components/admin/ActivityManager';
+import AdminSettings from '../components/admin/AdminSettings';
+import SyllabusManager from '../components/admin/SyllabusManager';
+import SyllabusViewer from '../components/shared/SyllabusViewer';
 
 export default function Dashboard() {
-    const [activeTab, setActiveTab] = useState('overview');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const activeTab = searchParams.get('tab') || 'overview';
+    const setActiveTab = (tab) => setSearchParams({ tab });
+
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [staffRequests, setStaffRequests] = useState([]);
@@ -25,15 +37,21 @@ export default function Dashboard() {
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
-            const parsedUser = JSON.parse(storedUser);
-            // Redirection Failsafe: Ensure pending staff cannot stay on Dashboard
-            if (parsedUser.role === 'staff' && parsedUser.status === 'pending') {
-                navigate('/pending-approval');
-            } else {
-                setTimeout(() => setUser(parsedUser), 0);
+            try {
+                const parsedUser = JSON.parse(storedUser);
+                // Redirection Failsafe: Ensure pending staff cannot stay on Dashboard
+                if (parsedUser?.role === 'staff' && parsedUser?.status === 'pending') {
+                    navigate('/pending-approval', { replace: true });
+                } else {
+                    setTimeout(() => setUser(parsedUser), 0);
+                }
+            } catch (err) {
+                console.error("Corrupted localStorage user data:", err);
+                localStorage.removeItem('user');
+                navigate('/login', { replace: true });
             }
         } else {
-            navigate('/login');
+            navigate('/login', { replace: true });
         }
     }, [navigate]);
 
@@ -145,31 +163,40 @@ export default function Dashboard() {
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
     const renderContent = () => {
+        if (!user) return (
+            <div className="flex h-full items-center justify-center p-20">
+                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        );
         switch (activeTab) {
             case 'courses': return <CourseManager />;
-            case 'students': return <UserManager role="student" />;
-            case 'staff': return <UserManager role="staff" />;
+            case 'quizzes': return <QuizManagement />;
+            case 'students': return <UserManager key="students" role="student" />;
+            case 'staff': return <UserManager key="staff" role="staff" />;
             case 'gallery': return <GalleryManager />;
             case 'payments': return <PaymentManager />;
-            case 'settings': return <CompanySettings />;
+            case 'bookings': return <BookingManager />;
+            case 'branding': return <CompanyManager />;
+            case 'syllabus': return user?.role === 'admin' ? <SyllabusManager /> : <SyllabusViewer />;
+            case 'admin-sessions': return <AdminSessionManager />;
             case 'staff-requests': return (
                 <div>
-                    <h2 className="text-3xl font-bold mb-6 text-gray-800">Staff Requests</h2>
+                    <h2 className="text-3xl font-bold mb-6 text-slate-200">Staff Requests</h2>
                     {staffRequests.length === 0 ? <p>No pending requests.</p> : (
-                        <div className="bg-white rounded-xl shadow overflow-hidden">
+                        <div className="bg-[#1e293b]/50 backdrop-blur-xl border border-white/10 shadow-glass rounded-xl overflow-x-auto">
                             <table className="w-full text-left">
-                                <thead className="bg-gray-50 border-b">
+                                <thead className="bg-transparent border-b border-white/10">
                                     <tr>
-                                        <th className="p-4 font-semibold text-gray-600">Name</th>
-                                        <th className="p-4 font-semibold text-gray-600">Email</th>
-                                        <th className="p-4 font-semibold text-gray-600">Phone</th>
-                                        <th className="p-4 font-semibold text-gray-600">Qualification</th>
-                                        <th className="p-4 font-semibold text-gray-600">Actions</th>
+                                        <th className="p-4 font-semibold text-slate-400">Name</th>
+                                        <th className="p-4 font-semibold text-slate-400">Email</th>
+                                        <th className="p-4 font-semibold text-slate-400">Phone</th>
+                                        <th className="p-4 font-semibold text-slate-400">Qualification</th>
+                                        <th className="p-4 font-semibold text-slate-400">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y">
                                     {staffRequests.map(req => (
-                                        <tr key={req.id} className="hover:bg-gray-50">
+                                        <tr key={req.id} className="hover:bg-white/10">
                                             <td className="p-4">{req.name}</td>
                                             <td className="p-4">{req.email}</td>
                                             <td className="p-4">{req.phone || '-'}</td>
@@ -186,24 +213,24 @@ export default function Dashboard() {
                     )}
                 </div>
             );
-            case 'course-proposals': return (
+            case 'proposals': return (
                 <div>
-                    <h2 className="text-3xl font-bold mb-6 text-gray-800">Course Proposals</h2>
-                    {courseRequests.length === 0 ? <p className="text-gray-500">No course proposals Yet.</p> : (
-                        <div className="bg-white rounded-xl shadow overflow-hidden">
+                    <h2 className="text-3xl font-bold mb-6 text-slate-200">Course Proposals</h2>
+                    {courseRequests.length === 0 ? <p className="text-slate-400">No course proposals Yet.</p> : (
+                        <div className="bg-[#1e293b]/50 backdrop-blur-xl border border-white/10 shadow-glass rounded-xl overflow-x-auto">
                             <table className="w-full text-left">
-                                <thead className="bg-gray-50 border-b">
+                                <thead className="bg-transparent border-b border-white/10">
                                     <tr>
-                                        <th className="p-4 font-semibold text-gray-600">Course Title</th>
-                                        <th className="p-4 font-semibold text-gray-600">Subject</th>
-                                        <th className="p-4 font-semibold text-gray-600">Staff</th>
-                                        <th className="p-4 font-semibold text-gray-600">Status</th>
-                                        {user.role === 'admin' && <th className="p-4 font-semibold text-gray-600">Actions</th>}
+                                        <th className="p-4 font-semibold text-slate-400">Course Title</th>
+                                        <th className="p-4 font-semibold text-slate-400">Subject</th>
+                                        <th className="p-4 font-semibold text-slate-400">Staff</th>
+                                        <th className="p-4 font-semibold text-slate-400">Status</th>
+                                        {user?.role === 'admin' && <th className="p-4 font-semibold text-slate-400">Actions</th>}
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y">
                                     {courseRequests.map(req => (
-                                        <tr key={req.id} className="hover:bg-gray-50">
+                                        <tr key={req.id} className="hover:bg-white/10">
                                             <td className="p-4 font-bold">{req.title}</td>
                                             <td className="p-4">{req.subject}</td>
                                             <td className="p-4">{req.staff?.name || 'You'}</td>
@@ -214,10 +241,14 @@ export default function Dashboard() {
                                                     {req.status}
                                                 </span>
                                             </td>
-                                            {user.role === 'admin' && req.status === 'pending' && (
+                                            {user?.role === 'admin' && (
                                                 <td className="p-4 flex gap-2">
-                                                    <button onClick={() => handleCourseRequestAction(req.id, 'approved')} className="px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 font-medium text-sm">Approve</button>
-                                                    <button onClick={() => handleCourseRequestAction(req.id, 'rejected')} className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 font-medium text-sm">Reject</button>
+                                                    {req.status === 'pending' && (
+                                                        <>
+                                                            <button onClick={() => handleCourseRequestAction(req.id, 'approved')} className="px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 font-medium text-sm">Approve</button>
+                                                            <button onClick={() => handleCourseRequestAction(req.id, 'rejected')} className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 font-medium text-sm">Reject</button>
+                                                        </>
+                                                    )}
                                                 </td>
                                             )}
                                         </tr>
@@ -228,46 +259,18 @@ export default function Dashboard() {
                     )}
                 </div>
             );
-            case 'activity-feed': return (
-                <div>
-                    <h2 className="text-3xl font-bold mb-6 text-gray-800">System Activity Feed</h2>
-                    <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
-                        <div className="divide-y divide-gray-50">
-                            {activities.length === 0 ? <div className="p-8 text-center text-gray-500 italic">No recent activity detected.</div> : activities.map(act => (
-                                <div key={act.id} className="p-6 hover:bg-gray-50/80 transition flex gap-5 items-start">
-                                    <div className={`p-3 rounded-2xl ${act.action === 'session_started' ? 'bg-green-100 text-green-600' :
-                                        act.action === 'session_ended' ? 'bg-orange-100 text-orange-600' :
-                                            act.action === 'booking_created' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
-                                        }`}>
-                                        <Bell size={20} />
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className="flex justify-between items-start mb-1">
-                                            <h4 className="font-bold text-gray-800 capitalize">{act.action.replace('_', ' ')}</h4>
-                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{new Date(act.createdAt).toLocaleString()}</span>
-                                        </div>
-                                        <p className="text-sm text-gray-600 font-medium">{act.details}</p>
-                                        <div className="flex items-center gap-2 mt-3">
-                                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-900 text-white font-black uppercase tracking-[0.1em]">{act.user?.role || act.userRole}</span>
-                                            <span className="text-[10px] text-gray-400 font-bold italic">{act.user?.name || 'System User'}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            );
+            case 'activity-feed': return <ActivityManager activities={activities} onRefresh={fetchActivityLogs} />;
+            case 'security': return <AdminSettings />;
             case 'notifications': return (
                 <div className="space-y-4">
-                    <h2 className="text-3xl font-bold mb-4 text-gray-800">Notifications</h2>
-                    {notifications.length === 0 ? <p className="text-gray-500">No new notifications.</p> : (
-                        <div className="bg-white rounded-xl shadow overflow-hidden">
+                    <h2 className="text-3xl font-bold mb-4 text-slate-200">Notifications</h2>
+                    {notifications.length === 0 ? <p className="text-slate-400">No new notifications.</p> : (
+                        <div className="bg-[#1e293b]/50 backdrop-blur-xl border border-white/10 shadow-glass rounded-xl overflow-x-auto">
                             {notifications.map(notif => (
-                                <div key={notif.id} className={`p-4 border-b flex justify-between items-center ${notif.isRead ? 'bg-gray-50' : 'bg-blue-50'}`}>
+                                <div key={notif.id} className={`p-4 border-b border-white/10 flex justify-between items-center transition-all ${notif.isRead ? 'bg-transparent' : 'bg-blue-500/20 border-l-4 border-l-blue-500'}`}>
                                     <div>
-                                        <p className={`font-medium ${notif.isRead ? 'text-gray-600' : 'text-gray-900'}`}>{notif.message}</p>
-                                        <p className="text-xs text-gray-500">{new Date(notif.createdAt).toLocaleString()}</p>
+                                        <p className={`font-medium ${notif.isRead ? 'text-slate-400' : 'text-white'}`}>{notif.message}</p>
+                                        <p className="text-xs text-slate-400 mt-1">{new Date(notif.createdAt).toLocaleString()}</p>
                                     </div>
                                     {!notif.isRead && (
                                         <button onClick={() => markAsRead(notif.id)} className="text-blue-600 hover:text-blue-800" title="Mark as Read">
@@ -280,9 +283,10 @@ export default function Dashboard() {
                     )}
                 </div>
             );
-            case 'schedule': return <SessionManager />;
+            case 'schedule': return <SessionManager user={user} />;
             default:
                 if (user?.role === 'staff') return <StaffOverview user={user} setUser={setUser} />;
+                if (user?.role === 'student') return <StudentOverview user={user} setActiveTab={setActiveTab} />;
                 return <Overview setActiveTab={setActiveTab} user={user} />;
         }
     };
@@ -293,7 +297,7 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="min-h-screen bg-[#f8fafc] bg-dashboard-grid flex text-slate-900 overflow-hidden relative font-sans">
+        <div className="min-h-screen bg-[#f8fafc] bg-dark-grid flex text-white overflow-hidden relative font-sans">
             {/* Redesigned Sidebar */}
             <aside className={`
                 fixed inset-y-0 left-0 z-40 w-72 glass-sidebar transition-transform duration-500 ease-out
@@ -327,6 +331,11 @@ export default function Dashboard() {
                                     <p className="text-[10px] text-slate-400 capitalize flex items-center gap-1 group-hover:text-blue-400 transition">
                                         <Award size={10} /> {user?.role} Account
                                     </p>
+                                    {user?.registrationId && (
+                                        <p className="text-[9px] font-black text-blue-500/80 uppercase tracking-tighter mt-0.5">
+                                            ID: {user.registrationId}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                             <button
@@ -342,7 +351,7 @@ export default function Dashboard() {
                     <nav className="flex-grow px-4 space-y-1 overflow-y-auto custom-scrollbar pt-2">
                         <SidebarItem icon={<LayoutDashboard size={20} />} label="Overview" active={activeTab === 'overview'} onClick={() => { setActiveTab('overview'); setIsSidebarOpen(false); }} />
 
-                        {user?.role === 'staff' && (
+                        {(user?.role === 'staff' || user?.role === 'student') && (
                             <SidebarItem icon={<Calendar size={20} />} label="Class Schedule" active={activeTab === 'schedule'} onClick={() => { setActiveTab('schedule'); setIsSidebarOpen(false); }} />
                         )}
 
@@ -352,14 +361,32 @@ export default function Dashboard() {
 
                         {user?.role === 'admin' && (
                             <>
-                                <SidebarItem icon={<Users size={20} />} label="Total Users" active={activeTab === 'users'} onClick={() => { setActiveTab('users'); setIsSidebarOpen(false); }} />
+                                <SidebarItem icon={<Users size={20} />} label="Staff List" active={activeTab === 'staff'} onClick={() => { setActiveTab('staff'); setIsSidebarOpen(false); }} />
+                                <SidebarItem icon={<Users size={20} />} label="Student List" active={activeTab === 'students'} onClick={() => { setActiveTab('students'); setIsSidebarOpen(false); }} />
+                                <SidebarItem
+                                    icon={<User size={20} />}
+                                    label="Staff Approval"
+                                    active={activeTab === 'staff-requests'}
+                                    onClick={() => { setActiveTab('staff-requests'); setIsSidebarOpen(false); }}
+                                    badge={staffRequests.length > 0 ? staffRequests.length : null}
+                                />
+                                <SidebarItem icon={<Calendar size={20} />} label="All Sessions" active={activeTab === 'admin-sessions'} onClick={() => { setActiveTab('admin-sessions'); setIsSidebarOpen(false); }} />
                                 <SidebarItem icon={<CreditCard size={20} />} label="Payments" active={activeTab === 'payments'} onClick={() => { setActiveTab('payments'); setIsSidebarOpen(false); }} />
+                                <SidebarItem icon={<Shield size={20} />} label="Security Settings" active={activeTab === 'security'} onClick={() => { setActiveTab('security'); setIsSidebarOpen(false); }} />
+                                <SidebarItem icon={<Globe size={20} />} label="Branding" active={activeTab === 'branding'} onClick={() => { setActiveTab('branding'); setIsSidebarOpen(false); }} />
                             </>
                         )}
 
+                        <SidebarItem icon={<Calendar size={20} />} label="Bookings" active={activeTab === 'bookings'} onClick={() => { setActiveTab('bookings'); setIsSidebarOpen(false); }} />
+                        <SidebarItem icon={<Award size={20} />} label="Assessments" active={activeTab === 'quizzes'} onClick={() => { setActiveTab('quizzes'); setIsSidebarOpen(false); }} />
                         <SidebarItem icon={<Image size={20} />} label="Gallery" active={activeTab === 'gallery'} onClick={() => { setActiveTab('gallery'); setIsSidebarOpen(false); }} />
-                        <SidebarItem icon={<FileText size={20} />} label="Course Proposals" active={activeTab === 'proposals'} onClick={() => { setActiveTab('proposals'); setIsSidebarOpen(false); }} />
-                        <SidebarItem icon={<Briefcase size={20} />} label="Activity Feed" active={activeTab === 'activities'} onClick={() => { setActiveTab('activities'); setIsSidebarOpen(false); }} />
+                        <SidebarItem icon={<BookOpen size={20} />} label="Syllabus" active={activeTab === 'syllabus'} onClick={() => { setActiveTab('syllabus'); setIsSidebarOpen(false); }} />
+                        {(user?.role === 'admin' || user?.role === 'staff') && (
+                            <>
+                                <SidebarItem icon={<FileText size={20} />} label="Course Proposals" active={activeTab === 'proposals'} onClick={() => { setActiveTab('proposals'); setIsSidebarOpen(false); }} />
+                                <SidebarItem icon={<Briefcase size={20} />} label="Activity Feed" active={activeTab === 'activities'} onClick={() => { setActiveTab('activities'); setIsSidebarOpen(false); }} />
+                            </>
+                        )}
                         <SidebarItem
                             icon={<Bell size={20} />}
                             label="Notifications"
@@ -385,30 +412,33 @@ export default function Dashboard() {
             {/* Main Content Area */}
             <main className="flex-1 lg:ml-72 flex flex-col h-screen overflow-hidden">
                 {/* Modern Top Header */}
-                <header className="h-20 bg-white/60 backdrop-blur-md border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-30">
+                <header className="h-20 bg-[#0b0f19]/80 backdrop-blur-md border-b border-white/10 px-4 md:px-8 flex items-center justify-between sticky top-0 z-30">
                     <button
                         onClick={() => setIsSidebarOpen(true)}
-                        className="lg:hidden p-2 hover:bg-slate-100 rounded-xl transition"
+                        className="lg:hidden p-2 hover:bg-white/5 rounded-xl transition text-white"
                     >
                         <Menu size={24} />
                     </button>
 
-                    <div className="flex items-center gap-2">
-                        <span className="text-slate-400 text-sm font-medium uppercase tracking-widest text-[10px]">Portal</span>
-                        <ChevronRight size={14} className="text-slate-300" />
-                        <span className="text-slate-900 font-black capitalize tracking-tight">{activeTab.replace('-', ' ')}</span>
+                    <div className="flex items-center gap-6">
+                        <NavControls />
+                        <div className="flex items-center gap-2">
+                            <span className="text-slate-400 text-sm font-medium uppercase tracking-widest text-[10px]">Portal</span>
+                            <ChevronRight size={14} className="text-slate-500" />
+                            <span className="text-white font-black capitalize tracking-tight">{activeTab.replace('-', ' ')}</span>
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <div className="hidden sm:flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-2xl border border-slate-200 animate-pulse">
-                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Active System</span>
+                        <div className="hidden sm:flex items-center gap-2 bg-white/5 px-4 py-2 rounded-2xl border border-white/10 shadow-inner">
+                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.6)]"></div>
+                            <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Active System</span>
                         </div>
                     </div>
                 </header>
 
                 {/* Content Container */}
-                <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-dashboard-grid">
+                <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar bg-dark-grid">
                     <div className="max-w-7xl mx-auto h-full pb-20">
                         <AnimatePresence mode="wait">
                             <motion.div
@@ -520,13 +550,13 @@ function Overview({ setActiveTab, user }) {
         <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h2 className="text-4xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+                    <h2 className="text-4xl font-black text-white tracking-tight flex items-center gap-3">
                         Welcome Back <span className="text-blue-600 animate-pulse">👋</span>
                     </h2>
-                    <p className="text-slate-500 font-medium mt-2 italic">You're logged in as <span className="text-blue-600 font-black uppercase text-xs tracking-widest">{user?.role}</span></p>
+                    <p className="text-slate-400 font-medium mt-2 italic">You're logged in as <span className="text-blue-600 font-black uppercase text-xs tracking-widest">{user?.role}</span></p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <button onClick={() => setActiveTab('courses')} className="flex items-center gap-2 px-6 py-4 bg-white border border-slate-200 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition shadow-sm hover:shadow-lg">
+                    <button onClick={() => setActiveTab('courses')} className="flex items-center gap-2 px-6 py-4 bg-[#1e293b]/50 backdrop-blur-xl border border-white/10 shadow-glass border border-white/10 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-white/10 transition shadow-sm hover:shadow-lg">
                         <BookOpen size={16} /> Audit Courses
                     </button>
                     <button
@@ -539,44 +569,45 @@ function Overview({ setActiveTab, user }) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard title="Active Courses" value={stats.courses} trend="+12%" icon={<BookOpen size={24} />} color="blue" />
-                <StatCard title="Total Students" value={stats.students} trend="+8.5%" icon={<Users size={24} />} color="indigo" />
-                <StatCard title="Total Revenue" value={`₹${stats.payments.toLocaleString()}`} trend="+23%" icon={<CreditCard size={24} />} color="emerald" />
-                <StatCard title="Course Proposals" value={stats.proposals} trend="Actions Required" icon={<FileText size={24} />} color="orange" />
+                <StatCard title="Active Courses" value={stats.courses} trend="+12%" icon={<BookOpen size={24} />} color="blue" onClick={() => setActiveTab('courses')} />
+                <StatCard title="Total Students" value={stats.students} trend="+8.5%" icon={<Users size={24} />} color="indigo" onClick={() => setActiveTab('users')} />
+                <StatCard title="Total Revenue" value={`₹${stats.payments.toLocaleString()}`} trend="+23%" icon={<CreditCard size={24} />} color="emerald" onClick={() => setActiveTab('payments')} />
+                <StatCard title="Course Proposals" value={stats.proposals} trend="Actions Required" icon={<FileText size={24} />} color="orange" onClick={() => setActiveTab('proposals')} />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 bg-white rounded-[2.5rem] border border-slate-200 shadow-sm p-10 relative overflow-hidden group">
+                <div className="lg:col-span-2 bg-[#1e293b]/50 backdrop-blur-xl border border-white/10 shadow-glass rounded-[2.5rem] border border-white/10 shadow-sm p-10 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:rotate-12 group-hover:scale-125 transition duration-1000">
                         <Award size={200} />
                     </div>
                     <div className="relative z-10">
                         <div className="flex items-center justify-between mb-10">
                             <div>
-                                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Main Command Hub</h3>
+                                <h3 className="text-2xl font-black text-white tracking-tight">Main Command Hub</h3>
                                 <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">Core Operations</p>
                             </div>
-                            <button className="bg-slate-50 p-3 rounded-2xl hover:bg-slate-100 transition"><ChevronRight size={20} /></button>
+                            <button className="bg-white/5 p-3 rounded-2xl hover:bg-slate-100 transition"><ChevronRight size={20} /></button>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <QuickAction icon={<BookOpen size={20} />} label="Course Manager" desc="Audit curriculum & content" color="blue" onClick={() => setActiveTab('courses')} />
-                            <QuickAction icon={<Users size={20} />} label="User Directory" desc="Manage roles & permissions" color="indigo" onClick={() => setActiveTab('users')} />
-                            <QuickAction icon={<MessageCircle size={20} />} label="Broadcast" desc="Send system-wide alerts" color="purple" onClick={() => setActiveTab('notifications')} />
-                            <QuickAction icon={<FileText size={20} />} label="Review Board" desc="Process faculty proposals" color="orange" onClick={() => setActiveTab('proposals')} />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mt-10">
+                            <FeatureCard icon={<BookOpen size={22} />} label="Course Manager" desc="Curriculum Audit" color="blue" onClick={() => setActiveTab('courses')} />
+                            <FeatureCard icon={<Award size={22} />} label="Quiz Hub" desc="Exam Monitoring" color="orange" onClick={() => setActiveTab('quizzes')} />
+                            <FeatureCard icon={<Briefcase size={22} />} label="Activity Logs" desc="System Oversight" color="emerald" onClick={() => setActiveTab('activity-feed')} />
+                            <FeatureCard icon={<BookOpen size={22} />} label="Syllabus" desc="Academic Library" color="indigo" onClick={() => setActiveTab('syllabus')} />
+                            <FeatureCard icon={<MessageCircle size={22} />} label="Broadcast" desc="Global Alerts" color="purple" onClick={() => setActiveTab('notifications')} />
                         </div>
                     </div>
                 </div>
 
                 <div className="lg:col-span-1 space-y-6">
-                    <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm group cursor-pointer hover:border-blue-200 transition duration-500">
-                        <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-2">
+                    <div className="bg-[#1e293b]/50 backdrop-blur-xl border border-white/10 shadow-glass p-8 rounded-[2.5rem] border border-white/10 shadow-sm group cursor-pointer hover:border-blue-200 transition duration-500">
+                        <h3 className="text-lg font-black text-white mb-6 flex items-center gap-2">
                             <Users size={20} className="text-blue-600" /> Faculty Health
                         </h3>
                         <div className="space-y-6">
                             <div>
                                 <div className="flex justify-between mb-2">
                                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Active Staff</span>
-                                    <span className="text-sm font-black text-slate-900">{stats.staff}</span>
+                                    <span className="text-sm font-black text-white">{stats.staff}</span>
                                 </div>
                                 <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                                     <div className="h-full bg-blue-500 rounded-full group-hover:translate-x-1 transition duration-1000" style={{ width: '75%' }}></div>
@@ -610,57 +641,7 @@ function Overview({ setActiveTab, user }) {
     );
 }
 
-function StatCard({ title, value, icon, color, trend }) {
-    const colorClasses = {
-        blue: 'text-blue-600 bg-blue-50 border-blue-100 shadow-blue-500/10',
-        indigo: 'text-indigo-600 bg-indigo-50 border-indigo-100 shadow-indigo-500/10',
-        emerald: 'text-emerald-600 bg-emerald-50 border-emerald-100 shadow-emerald-500/10',
-        orange: 'text-orange-600 bg-orange-50 border-orange-100 shadow-orange-500/10',
-        purple: 'text-purple-600 bg-purple-50 border-purple-100 shadow-purple-500/10'
-    };
-    return (
-        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-[0_4px_20px_-4px_rgba(30,41,59,0.03)] group hover:shadow-[0_40px_60px_-12px_rgba(0,0,0,0.08)] hover:-translate-y-3 transition duration-700 relative overflow-hidden">
-            <div className="flex justify-between items-start mb-8">
-                <div className={`p-4 rounded-3xl border ${colorClasses[color || 'blue']} transition duration-700 group-hover:scale-110 group-hover:shadow-xl`}>
-                    {icon}
-                </div>
-                {trend && (
-                    <span className={`text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full ${trend.includes('+') ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400'}`}>
-                        {trend}
-                    </span>
-                )}
-            </div>
-            <div>
-                <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{title}</p>
-                <h4 className="text-4xl font-black text-slate-900 tracking-tighter leading-none">{value}</h4>
-            </div>
-            <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-[0.1] group-hover:scale-150 group-hover:rotate-12 transition duration-1000 pointer-events-none">
-                {icon}
-            </div>
-        </div>
-    );
-}
-
-function QuickAction({ icon, label, desc, color, onClick }) {
-    const colors = {
-        blue: 'from-blue-500 to-blue-600 shadow-blue-500/30',
-        indigo: 'from-indigo-500 to-indigo-600 shadow-indigo-500/30',
-        purple: 'from-purple-500 to-purple-600 shadow-purple-500/30',
-        orange: 'from-orange-500 to-orange-600 shadow-orange-500/30',
-    };
-    return (
-        <button onClick={onClick} className="flex items-center gap-6 p-6 bg-white border border-slate-100 rounded-[2rem] hover:border-blue-200 hover:bg-slate-50/50 transition duration-700 group text-left shadow-sm">
-            <div className={`w-16 h-16 rounded-[1.25rem] bg-gradient-to-br ${colors[color]} flex items-center justify-center text-white shadow-2xl group-hover:scale-110 group-hover:rotate-3 transition duration-700`}>
-                {icon}
-            </div>
-            <div>
-                <h4 className="text-base font-black text-slate-900 mb-1">{label}</h4>
-                <p className="text-[11px] font-medium text-slate-400 leading-tight tracking-wide">{desc}</p>
-            </div>
-            <ChevronRight size={18} className="ml-auto text-slate-300 group-hover:text-blue-500 group-hover:translate-x-2 transition duration-700" />
-        </button>
-    );
-}
+// StatCard and QuickAction removed as they are now imported from DashCards.jsx
 
 function CompanySettings() {
     const [company, setCompany] = useState({
@@ -699,18 +680,18 @@ function CompanySettings() {
         <div>
             <h2 className="text-2xl font-bold mb-6">Company Settings</h2>
             {message && <div className={`p-4 rounded mb-4 ${message.includes('success') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{message}</div>}
-            <form onSubmit={handleSave} className="bg-white p-6 rounded-xl shadow-md space-y-4 max-w-2xl">
+            <form onSubmit={handleSave} className="bg-[#1e293b]/50 backdrop-blur-xl border border-white/10 shadow-glass p-6 rounded-xl shadow-md space-y-4 max-w-2xl">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-gray-700 font-semibold mb-2">Company Name</label>
+                        <label className="block text-slate-300 font-semibold mb-2">Company Name</label>
                         <input name="name" value={company.name || ''} onChange={handleChange} className="w-full p-2 border rounded" />
                     </div>
                     <div>
-                        <label className="block text-gray-700 font-semibold mb-2">Contact Email</label>
+                        <label className="block text-slate-300 font-semibold mb-2">Contact Email</label>
                         <input name="email" value={company.email || ''} onChange={handleChange} className="w-full p-2 border rounded" />
                     </div>
                     <div>
-                        <label className="block text-gray-700 font-semibold mb-2">Phone</label>
+                        <label className="block text-slate-300 font-semibold mb-2">Phone</label>
                         <input name="phone" value={company.phone || ''} onChange={handleChange} className="w-full p-2 border rounded" />
                     </div>
                 </div>
@@ -739,7 +720,7 @@ function StaffOverview({ user, setUser }) {
                 const token = localStorage.getItem('token');
                 const authHeader = { headers: { Authorization: `Bearer ${token}` } };
                 const [sessionsRes, coursesRes] = await Promise.all([
-                    axios.get('/sessions', authHeader),
+                    axios.get('/sessions/staff', authHeader),
                     axios.get('/courses', authHeader)
                 ]);
                 const mySessions = Array.isArray(sessionsRes.data) ? sessionsRes.data.filter(s => s.staffId === user.id) : [];
@@ -757,7 +738,11 @@ function StaffOverview({ user, setUser }) {
     async function saveStaffProfile() {
         setIsSaving(true);
         try {
-            const res = await axios.put(`/users/${user.id}`, { specialization, bio, subjects });
+            const token = localStorage.getItem('token');
+            const res = await axios.put(`/users/${user.id}`,
+                { specialization, bio, subjects },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
             setUser(res.data);
             localStorage.setItem('user', JSON.stringify(res.data));
             alert('Profile updated successfully!');
@@ -789,8 +774,8 @@ function StaffOverview({ user, setUser }) {
                         </span>
                         <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
                     </div>
-                    <h2 className="text-4xl font-black text-slate-900 tracking-tight">Academic Command Center</h2>
-                    <p className="text-slate-500 font-medium mt-1">Refine your professional profile and curriculum proposals.</p>
+                    <h2 className="text-4xl font-black text-white tracking-tight">Academic Command Center</h2>
+                    <p className="text-slate-400 font-medium mt-1">Refine your professional profile and curriculum proposals.</p>
                 </div>
                 <button
                     onClick={() => setIsProposalModalOpen(true)}
@@ -801,32 +786,23 @@ function StaffOverview({ user, setUser }) {
             </div>
 
             {/* Quick Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex items-center gap-6 group hover:shadow-xl transition duration-500">
-                    <div className="w-16 h-16 rounded-3xl bg-blue-50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition duration-500">
-                        <Calendar size={28} />
-                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="bg-[#1e293b]/50 backdrop-blur-xl border border-white/10 shadow-glass p-8 rounded-[2.5rem] flex items-center justify-between group hover:border-blue-500/30 transition duration-500">
                     <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Today's Sessions</p>
-                        <h4 className="text-3xl font-black text-slate-900">{stats.todaySessions}</h4>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400 mb-2">Today's Academic Load</p>
+                        <h3 className="text-4xl font-black text-white tracking-tighter">{stats.todaySessions} <span className="text-sm font-medium text-slate-500 uppercase tracking-widest ml-1">Sessions</span></h3>
+                    </div>
+                    <div className="p-4 bg-blue-500/10 rounded-2xl border border-blue-500/20 text-blue-400 group-hover:scale-110 transition duration-500">
+                        <Calendar size={32} />
                     </div>
                 </div>
-                <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex items-center gap-6 group hover:shadow-xl transition duration-500">
-                    <div className="w-16 h-16 rounded-3xl bg-indigo-50 flex items-center justify-center text-indigo-600 group-hover:scale-110 transition duration-500">
-                        <Users size={28} />
-                    </div>
+                <div className="bg-[#1e293b]/50 backdrop-blur-xl border border-white/10 shadow-glass p-8 rounded-[2.5rem] flex items-center justify-between group hover:border-emerald-500/30 transition duration-500">
                     <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Students</p>
-                        <h4 className="text-3xl font-black text-slate-900">{stats.totalStudents}</h4>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400 mb-2">Portfolio Volume</p>
+                        <h3 className="text-4xl font-black text-white tracking-tighter">{stats.courses} <span className="text-sm font-medium text-slate-500 uppercase tracking-widest ml-1">Active Courses</span></h3>
                     </div>
-                </div>
-                <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex items-center gap-6 group hover:shadow-xl transition duration-500">
-                    <div className="w-16 h-16 rounded-3xl bg-emerald-50 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition duration-500">
-                        <BookOpen size={28} />
-                    </div>
-                    <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Assigned Courses</p>
-                        <h4 className="text-3xl font-black text-slate-900">{stats.courses}</h4>
+                    <div className="p-4 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 text-emerald-400 group-hover:scale-110 transition duration-500">
+                        <BookOpen size={32} />
                     </div>
                 </div>
             </div>
@@ -834,11 +810,11 @@ function StaffOverview({ user, setUser }) {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Left Column: Profile Status */}
                 <div className="lg:col-span-1 space-y-6">
-                    <div className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group">
+                    <div className="bg-[#1e293b]/50 backdrop-blur-xl border border-white/10 shadow-glass p-10 rounded-[2.5rem] border border-white/5 shadow-sm overflow-hidden relative group">
                         <div className="absolute top-0 right-0 p-8 opacity-5">
                             <Award size={150} />
                         </div>
-                        <h3 className="text-xl font-black text-slate-900 mb-8 relative z-10">Verification Status</h3>
+                        <h3 className="text-xl font-black text-white mb-8 relative z-10">Verification Status</h3>
 
                         <div className="space-y-8 relative z-10">
                             <div>
@@ -857,9 +833,9 @@ function StaffOverview({ user, setUser }) {
                             </div>
 
                             <div className="space-y-4">
-                                <StatusItem label="Academic Credentials" active={!!user?.educationPdf} />
-                                <StatusItem label="Research/Projects" active={!!user?.projectPdf} />
-                                <StatusItem label="Identity Verification" active={!!user?.profileImage} />
+                                <StatusItem label="Academic Credentials" field="educationPdf" active={!!user?.educationPdf} user={user} setUser={setUser} uploadingField={uploadingField} setUploadingField={setUploadingField} />
+                                <StatusItem label="Research/Projects" field="projectPdf" active={!!user?.projectPdf} user={user} setUser={setUser} uploadingField={uploadingField} setUploadingField={setUploadingField} />
+                                <StatusItem label="Identity Verification" field="profileImage" active={!!user?.profileImage} user={user} setUser={setUser} uploadingField={uploadingField} setUploadingField={setUploadingField} />
                             </div>
 
                             <div className="p-6 bg-blue-50 rounded-3xl border border-blue-100">
@@ -897,7 +873,7 @@ function StaffOverview({ user, setUser }) {
                                 <input
                                     type="text"
                                     value={subjects}
-                                    onChange={(e) => setSubjects(e.target.value)}
+                                    onChange={(e) => { setSubjects(e.target.value); setSpecialization(e.target.value); }}
                                     className="w-full p-5 bg-white/5 border border-white/10 rounded-2xl focus:ring-4 focus:ring-blue-500/30 outline-none transition text-white placeholder-white/20 font-bold"
                                     placeholder="e.g. Theoretical Physics, Quantum Mechanics"
                                 />
@@ -916,7 +892,7 @@ function StaffOverview({ user, setUser }) {
                                 <button
                                     onClick={saveStaffProfile}
                                     disabled={isSaving}
-                                    className="flex-1 bg-white text-slate-900 py-5 rounded-2xl font-black text-sm shadow-2xl hover:bg-blue-50 transition active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50"
+                                    className="flex-1 bg-blue-500/20 backdrop-blur-xl border border-blue-500/30 shadow-glass text-blue-400 py-5 rounded-2xl font-black text-sm shadow-2xl hover:bg-blue-500/30 hover:text-blue-300 transition active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50"
                                 >
                                     {isSaving ? 'Syncing...' : <><Save size={18} /> Sync Cloud Profile</>}
                                 </button>
@@ -944,72 +920,107 @@ function StaffOverview({ user, setUser }) {
                             initial={{ scale: 0.9, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="bg-white rounded-[3rem] shadow-2xl w-full max-w-2xl overflow-hidden relative z-10 border border-white/20"
+                            className="bg-[#1e293b]/50 backdrop-blur-xl border border-white/10 shadow-glass rounded-[3rem] shadow-2xl w-full max-w-2xl overflow-hidden relative z-10 border border-white/20"
                         >
-                            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-10 text-white flex justify-between items-center relative overflow-hidden">
-                                <div className="absolute top-0 right-0 p-4 opacity-10">
-                                    <BookOpen size={120} />
+                            <div className="bg-gradient-to-br from-slate-900 via-[#0f172a] to-emerald-950 p-10 text-white flex justify-between items-center relative overflow-hidden border-b border-emerald-500/20">
+                                <div className="absolute -top-10 -right-10 p-4 opacity-5 rotate-12">
+                                    <BookOpen size={200} />
                                 </div>
-                                <div className="relative z-10">
-                                    <h3 className="text-3xl font-black tracking-tight">Course Proposal</h3>
-                                    <p className="text-blue-100 text-xs font-bold uppercase tracking-widest mt-2">Curriculum Submission Portal</p>
+                                <div className="relative z-10 border-l-4 border-emerald-500 pl-6">
+                                    <h3 className="text-3xl font-black tracking-tight text-emerald-50">Course Proposal</h3>
+                                    <p className="text-emerald-400/80 text-xs font-bold uppercase tracking-[0.2em] mt-2">Official Curriculum Submission</p>
                                 </div>
-                                <button onClick={() => setIsProposalModalOpen(false)} className="bg-white/10 hover:bg-white/20 p-3 rounded-full transition relative z-10"><X size={24} /></button>
+                                <button onClick={() => setIsProposalModalOpen(false)} className="bg-white/5 hover:bg-emerald-500/20 text-slate-400 hover:text-emerald-400 p-3 rounded-full transition relative z-10 border border-white/5 hover:border-emerald-500/30"><X size={24} /></button>
                             </div>
 
-                            <form onSubmit={submitProposal} className="p-10 space-y-8">
+                            <form onSubmit={submitProposal} className="p-10 space-y-8 bg-[#0b1121] max-h-[75vh] overflow-y-auto custom-scrollbar">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div className="md:col-span-2">
-                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Proposed Course Title</label>
+                                        <label className="block text-[10px] font-black text-emerald-500/70 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Proposed Course Title
+                                        </label>
                                         <input
                                             required
                                             value={newProposal.title}
                                             onChange={(e) => setNewProposal({ ...newProposal, title: e.target.value })}
-                                            className="w-full p-5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition font-bold text-slate-900"
+                                            className="w-full p-5 bg-[#172033] border border-white/5 rounded-xl focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition font-medium text-white shadow-inner"
                                             placeholder="e.g. Advanced Particle Physics"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Academic Subject</label>
+                                        <label className="block text-[10px] font-black text-emerald-500/70 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Academic Subject
+                                        </label>
                                         <input
                                             required
                                             value={newProposal.subject}
                                             onChange={(e) => setNewProposal({ ...newProposal, subject: e.target.value })}
-                                            className="w-full p-5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition font-bold"
+                                            className="w-full p-5 bg-[#172033] border border-white/5 rounded-xl focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition font-medium text-white shadow-inner"
                                             placeholder="e.g. Physics"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Examination Board</label>
-                                        <select
-                                            value={newProposal.board}
-                                            onChange={(e) => setNewProposal({ ...newProposal, board: e.target.value })}
-                                            className="w-full p-5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition font-bold appearance-none"
-                                        >
-                                            <option value="CBSE">CBSE</option>
-                                            <option value="TN">TN State Board</option>
-                                            <option value="ICSE">ICSE</option>
-                                            <option value="Other">Other</option>
-                                        </select>
+                                        <label className="block text-[10px] font-black text-emerald-500/70 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Examination Board
+                                        </label>
+                                        <div className="relative">
+                                            <select
+                                                value={newProposal.board}
+                                                onChange={(e) => setNewProposal({ ...newProposal, board: e.target.value })}
+                                                className="w-full p-5 bg-[#172033] border border-white/5 rounded-xl focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition font-medium text-white appearance-none shadow-inner"
+                                            >
+                                                <option value="CBSE" className="bg-slate-900">CBSE</option>
+                                                <option value="TN" className="bg-slate-900">TN State Board</option>
+                                                <option value="ICSE" className="bg-slate-900">ICSE</option>
+                                                <option value="Other" className="bg-slate-900">Other</option>
+                                            </select>
+                                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-emerald-500">
+                                                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Syllabus & Curriculum Overview</label>
-                                    <textarea
-                                        required
-                                        value={newProposal.description}
-                                        onChange={(e) => setNewProposal({ ...newProposal, description: e.target.value })}
-                                        className="w-full p-6 bg-slate-50 border border-slate-100 rounded-[2rem] focus:ring-4 focus:ring-blue-500/10 outline-none transition min-h-[140px] resize-none font-medium text-slate-600 leading-relaxed"
-                                        placeholder="Outline the modules, learning outcomes, and prerequisites..."
-                                    />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+                                    <div>
+                                        <label className="block text-[10px] font-black text-emerald-500/70 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Delivery Mode
+                                        </label>
+                                        <div className="relative">
+                                            <select
+                                                value={newProposal.mode}
+                                                onChange={(e) => setNewProposal({ ...newProposal, mode: e.target.value })}
+                                                className="w-full p-5 bg-[#172033] border border-white/5 rounded-xl focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition font-medium text-white appearance-none shadow-inner"
+                                            >
+                                                <option value="online" className="bg-slate-900">Online Learning</option>
+                                                <option value="offline" className="bg-slate-900">Offline Campus</option>
+                                            </select>
+                                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-emerald-500">
+                                                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black text-emerald-500/70 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Syllabus & Curriculum Overview
+                                        </label>
+                                        <textarea
+                                            required
+                                            value={newProposal.description}
+                                            onChange={(e) => setNewProposal({ ...newProposal, description: e.target.value })}
+                                            className="w-full p-6 bg-[#172033] border border-white/5 rounded-xl focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition min-h-[160px] resize-none font-medium text-white leading-relaxed shadow-inner"
+                                            placeholder="Outline the modules, learning outcomes, and prerequisites..."
+                                        />
+                                    </div>
                                 </div>
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="w-full bg-blue-600 text-white py-6 rounded-2xl font-black text-lg hover:bg-blue-700 transition shadow-2xl shadow-blue-500/30 active:scale-95 flex justify-center items-center gap-3 disabled:opacity-50 duration-500"
-                                >
-                                    {isSubmitting ? 'Transmitting Proposal...' : <><Send size={22} /> Dispatch Proposal</>}
-                                </button>
+                                <div className="pt-4">
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="w-full bg-emerald-600 text-white py-5 rounded-xl font-black text-sm hover:bg-emerald-500 hover:shadow-lg hover:shadow-emerald-500/20 uppercase tracking-widest transition-all active:scale-95 flex justify-center items-center gap-3 disabled:opacity-50 duration-500 border border-emerald-400/50"
+                                    >
+                                        {isSubmitting ? 'Transmitting Proposal...' : <><Send size={20} /> Dispatch Proposal to Board</>}
+                                    </button>
+                                </div>
                             </form>
                         </motion.div>
                     </div>
@@ -1019,17 +1030,242 @@ function StaffOverview({ user, setUser }) {
     );
 }
 
-const StatusItem = ({ label, active }) => (
-    <div className="flex items-center justify-between p-4 bg-slate-50/50 rounded-2xl border border-slate-100 group">
-        <span className="text-xs font-bold text-slate-500 group-hover:text-slate-900 transition">{label}</span>
-        {active ? (
-            <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shadow-sm">
-                <Check size={14} />
+const StatusItem = ({ label, field, active, user, setUser, uploadingField, setUploadingField }) => {
+    const isUploading = uploadingField === field;
+
+    const handleFileUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setUploadingField(field);
+        const formData = new FormData();
+        formData.append('image', file); // The backend upload middleware expects 'image'
+
+        try {
+            const token = localStorage.getItem('token');
+            const uploadRes = await axios.post('/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
+            });
+
+            const filePath = uploadRes.data;
+            const updateRes = await axios.put(`/users/${user.id}`, { [field]: filePath }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            setUser(updateRes.data);
+            localStorage.setItem('user', JSON.stringify(updateRes.data));
+            alert(`${label} uploaded successfully!`);
+        } catch (error) {
+            console.error(error);
+            alert(`Failed to upload ${label}`);
+        } finally {
+            setUploadingField(null);
+            e.target.value = ''; // Reset input
+        }
+    };
+
+    const handleDelete = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!window.confirm(`Are you sure you want to delete ${label}?`)) return;
+
+        try {
+            const token = localStorage.getItem('token');
+            const updateRes = await axios.put(`/users/${user.id}`, { [field]: null }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setUser(updateRes.data);
+            localStorage.setItem('user', JSON.stringify(updateRes.data));
+            alert(`${label} deleted successfully!`);
+        } catch (error) {
+            console.error(error);
+            alert(`Failed to delete ${label}`);
+        }
+    };
+
+    return (
+        <div className="relative">
+            <input
+                type="file"
+                id={`upload-${field}`}
+                className="hidden"
+                onChange={handleFileUpload}
+                accept={field === 'profileImage' ? "image/*" : ".pdf,.doc,.docx"}
+            />
+            {active ? (
+                <div className="flex items-center justify-between p-4 bg-emerald-500/10 rounded-2xl border border-emerald-500/20">
+                    <span className="text-xs font-bold text-emerald-400 flex items-center gap-2">
+                        <Check size={14} /> {label} Uploaded
+                    </span>
+                    <div className="flex gap-2">
+                        <a
+                            href={`http://localhost:5000${user[field]}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200 transition"
+                            onClick={(e) => e.stopPropagation()}
+                            title="View File"
+                        >
+                            <Eye size={14} />
+                        </a>
+                        <button
+                            onClick={handleDelete}
+                            className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-200 transition"
+                            title="Delete File"
+                        >
+                            <Trash2 size={14} />
+                        </button>
+                    </div>
+                </div>
+            ) : (
+                <label htmlFor={`upload-${field}`} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 group cursor-pointer hover:bg-white/10 transition">
+                    <span className="text-xs font-bold text-slate-400 group-hover:text-slate-200 transition flex items-center gap-2">
+                        {isUploading ? <><div className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div> Uploading...</> : label}
+                    </span>
+                    <div className="w-6 h-6 rounded-full bg-slate-100 text-slate-300 flex items-center justify-center border border-white/10 group-hover:bg-blue-100 group-hover:text-blue-600 transition">
+                        <Upload size={12} />
+                    </div>
+                </label>
+            )}
+        </div>
+    );
+};
+
+function StudentOverview({ user, setActiveTab }) {
+    const [stats, setStats] = useState({ enrolled: 0, classes: 0, performance: 'Good' });
+    const [sessions, setSessions] = useState([]);
+
+    useEffect(() => {
+        async function fetchStudentStats() {
+            try {
+                const token = localStorage.getItem('token');
+                const authHeader = { headers: { Authorization: `Bearer ${token}` } };
+                const [bookingsRes, sessionsRes] = await Promise.all([
+                    axios.get('/bookings/my', authHeader),
+                    axios.get('/sessions/student', authHeader)
+                ]);
+
+                const uniqueCourses = new Set(bookingsRes.data.map(b => b.courseId).filter(Boolean));
+
+                setStats({
+                    enrolled: uniqueCourses.size,
+                    classes: sessionsRes.data.filter(s => s.status === 'scheduled' || s.status === 'in_progress').length,
+                    performance: 'Academic Excellence'
+                });
+                setSessions(sessionsRes.data.filter(s => s.status === 'scheduled' || s.status === 'in_progress'));
+            } catch (err) {
+                console.error("Failed to fetch student stats");
+            }
+        };
+        fetchStudentStats();
+    }, []);
+
+    return (
+        <div className="space-y-10 pb-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div>
+                    <div className="flex items-center gap-3 mb-2">
+                        <span className="px-3 py-1 bg-green-100 text-green-600 text-[10px] font-black uppercase tracking-widest rounded-full border border-green-200">
+                            Student Portal
+                        </span>
+                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
+                    </div>
+                    <h2 className="text-4xl font-black text-white tracking-tight">Academic Journey Hub</h2>
+                    <p className="text-slate-400 font-medium mt-1 italic">Welcome back, {user?.name}. Manage your courses and upcoming sessions.</p>
+                </div>
             </div>
-        ) : (
-            <div className="w-6 h-6 rounded-full bg-slate-100 text-slate-300 flex items-center justify-center border border-slate-200">
-                <div className="w-1.5 h-1.5 bg-slate-200 rounded-full" />
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="bg-[#1e293b]/50 backdrop-blur-xl border border-white/10 shadow-glass p-8 rounded-[2.5rem] flex items-center justify-between group h-40">
+                    <div className="flex flex-col justify-center">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400 mb-2 leading-none">Enrolled Courses</p>
+                        <h3 className="text-4xl font-black text-white tracking-tighter">{stats.enrolled}</h3>
+                    </div>
+                    <div className="p-4 bg-blue-500/10 rounded-2xl border border-blue-500/20 text-blue-400">
+                        <BookOpen size={32} />
+                    </div>
+                </div>
+                <div className="bg-[#1e293b]/50 backdrop-blur-xl border border-white/10 shadow-glass p-8 rounded-[2.5rem] flex items-center justify-between group h-40">
+                    <div className="flex flex-col justify-center">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400 mb-2 leading-none">Upcoming Classes</p>
+                        <h3 className="text-4xl font-black text-white tracking-tighter">{stats.classes}</h3>
+                    </div>
+                    <div className="p-4 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 text-emerald-400">
+                        <Calendar size={32} />
+                    </div>
+                </div>
+                <div className="bg-[#1e293b]/50 backdrop-blur-xl border border-white/10 shadow-glass p-8 rounded-[2.5rem] flex items-center justify-between group h-40">
+                    <div className="flex flex-col justify-center">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400 mb-2 leading-none">Academic Standing</p>
+                        <h3 className="text-xl font-black text-white tracking-tight uppercase leading-tight">{stats.performance}</h3>
+                    </div>
+                    <div className="p-4 bg-indigo-500/10 rounded-2xl border border-indigo-500/20 text-indigo-400">
+                        <Award size={32} />
+                    </div>
+                </div>
             </div>
-        )}
-    </div>
-);
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Live Sessions Widget */}
+                <div className="bg-[#1e293b]/50 backdrop-blur-xl border border-white/10 shadow-glass p-8 rounded-[2.5rem] relative overflow-hidden group">
+                    <div className="flex items-center gap-2 mb-6 text-blue-400">
+                        <Video size={18} />
+                        <h3 className="text-xs font-black uppercase tracking-[0.2em] leading-none">Live Classes & Meetings</h3>
+                    </div>
+
+                    <div className="space-y-4 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                        {sessions.length === 0 ? (
+                            <p className="text-slate-400 text-sm italic py-4">No upcoming live sessions scheduled yet.</p>
+                        ) : sessions.map(session => (
+                            <div key={session.id} className="bg-white/5 border border-white/10 p-5 rounded-3xl group/item hover:bg-white/10 transition">
+                                <div className="flex justify-between items-start mb-3">
+                                    <h4 className="font-bold text-slate-200">{session.title}</h4>
+                                    <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-black tracking-wider ${session.status === 'scheduled' ? 'bg-blue-500/20 text-blue-400' : 'bg-orange-500/20 text-orange-400'}`}>
+                                        {session.status}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-4 text-xs text-slate-400 mb-4">
+                                    <div className="flex items-center gap-1"><Calendar size={12} /> {new Date(session.date).toLocaleDateString()}</div>
+                                    <div className="flex items-center gap-1"><Clock size={12} /> {session.startTime}</div>
+                                </div>
+                                {session.meetingLink && (
+                                    <a
+                                        href={session.meetingLink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
+                                    >
+                                        Join Session <Video size={14} />
+                                    </a>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-8">
+                    <div className="bg-slate-900/40 p-10 rounded-[3rem] border border-white/5 relative overflow-hidden group">
+                        <div className="absolute -bottom-10 -right-10 opacity-5 group-hover:scale-110 transition duration-1000 rotate-45">
+                            <Calendar size={180} />
+                        </div>
+                        <h3 className="text-xl font-black text-white mb-4 relative z-10">Next Class Entry</h3>
+                        <p className="text-slate-400 text-sm mb-6 relative z-10 leading-relaxed italic">Stay organized with your personalized academic schedule. Join your sessions directly from the portal.</p>
+                        <button onClick={() => setActiveTab('schedule')} className="px-8 py-4 bg-blue-600 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-blue-700 transition relative z-10 shadow-xl shadow-blue-500/20">
+                            Open Schedule Center
+                        </button>
+                    </div>
+                    <div className="bg-slate-900/40 p-10 rounded-[3rem] border border-white/5 relative overflow-hidden group">
+                        <div className="absolute -bottom-10 -right-10 opacity-5 group-hover:scale-110 transition duration-1000 -rotate-12">
+                            <Award size={180} />
+                        </div>
+                        <h3 className="text-xl font-black text-white mb-4 relative z-10">Assessments & Grades</h3>
+                        <p className="text-slate-400 text-sm mb-6 relative z-10 leading-relaxed italic">Track your progress and view quiz results.</p>
+                        <button onClick={() => setActiveTab('quizzes')} className="px-8 py-4 bg-emerald-600 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-emerald-700 transition relative z-10 shadow-xl shadow-emerald-500/20">
+                            View Vault
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}

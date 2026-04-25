@@ -35,21 +35,17 @@ const createRazorpayOrder = async (req, res) => {
 // @desc    Process a new payment (Verify & Book)
 // @route   POST /api/payments
 // @access  Private
+// @desc    Process a new payment (QR Code Manual)
+// @route   POST /api/payments
+// @access  Private
 const processPayment = async (req, res) => {
-    // For manual/card payments (Old Logic) or Razorpay Verification (New Logic)
-    const { courseId, amount, method, transactionId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    // For manual QR payments
+    const { courseId, amount, transactionId } = req.body;
+    const screenshotUrl = req.file ? `/uploads/${req.file.filename}` : null;
 
     try {
-        // Razorpay Verification
-        if (method === 'Razorpay' && razorpay_signature) {
-            const body = razorpay_order_id + "|" + razorpay_payment_id;
-            const expectedSignature = crypto.createHmac('sha256', 'YourKeySecretHere') // Must match key_secret above
-                .update(body.toString())
-                .digest('hex');
-
-            if (expectedSignature !== razorpay_signature) {
-                return res.status(400).json({ message: 'Invalid Signature' });
-            }
+        if (!screenshotUrl) {
+            return res.status(400).json({ message: 'Screenshot is required for verification.' });
         }
 
         // 0. Check for Existing Active Booking
@@ -70,55 +66,92 @@ const processPayment = async (req, res) => {
             return res.status(400).json({ message: 'You already have an active booking for this course.' });
         }
 
-        // Fetch Course to get duration
+        // Fetch Course to ensure it exists
         const course = await Course.findByPk(courseId);
         if (!course) return res.status(404).json({ message: 'Course not found' });
 
-        // 1. Create Payment Record
+        // 1. Create Pending Payment Record
         const payment = await Payment.create({
             userId: req.user.id,
             courseId,
             amount,
-            method,
-            transactionId: transactionId || razorpay_payment_id || `TXN-${Date.now()}`,
-            status: 'completed'
+            method: 'UPI QR',
+            transactionId: transactionId || `TXN-${Date.now()}`,
+            status: 'pending',
+            screenshotUrl: screenshotUrl
         });
 
-        // 2. Create Enrollment Booking with Expiration
-        let expiresAt = null;
-        if (course.duration) {
-            expiresAt = new Date(Date.now() + course.duration * 60 * 1000); // Minutes to Milliseconds
+        // 2. Notification for User
+        const { Notification } = require('../models');
+        await Notification.create({
+            userId: req.user.id,
+            message: `Your payment of ₹${amount} for ${course.title} is pending verification. We will notify you once approved.`,
+            isRead: false
+        });
+
+        res.status(201).json({ message: 'Payment submitted successfully. Awaiting admin verification', payment });
+    } catch (error) {
+        console.error("Payment Processing Error:", error);
+        if (error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(400).json({ message: 'Transaction ID already exists. Please check your ID.' });
+        }
+        res.status(400).json({ message: 'Payment processing failed', error: error.message });
+    }
+};
+
+// @desc    Verify a pending manual payment
+// @route   POST /api/payments/:id/verify
+// @access  Private/Admin
+const verifyPayment = async (req, res) => {
+    try {
+        const { status } = req.body; // 'completed' or 'failed'
+        const payment = await Payment.findByPk(req.params.id);
+
+        if (!payment) return res.status(404).json({ message: 'Payment not found' });
+        if (payment.status !== 'pending') return res.status(400).json({ message: `Payment is already ${payment.status}` });
+
+        if (status === 'failed') {
+            await payment.update({ status: 'failed' });
+            return res.json({ message: 'Payment rejected', payment });
         }
 
+        // Fetch Course to get duration
+        const course = await Course.findByPk(payment.courseId);
+
+        // Calculate Expiration
+        let expiresAt = null;
+        if (course.duration) {
+            expiresAt = new Date(Date.now() + course.duration * 60 * 1000);
+        }
+
+        // Create Enrollment Booking
         await Booking.create({
-            userId: req.user.id,
-            courseId,
+            userId: payment.userId,
+            courseId: payment.courseId,
             type: 'course',
             status: 'confirmed',
             date: new Date(),
             expiresAt: expiresAt
         });
 
-        // 3. Create Notification
+        // Update Payment Status
+        await payment.update({ status: 'completed' });
+
+        // Notify User
         const { Notification } = require('../models');
         await Notification.create({
-            userId: req.user.id,
-            message: `Successfully enrolled in ${course.title}. ${expiresAt ? 'Access expires on ' + expiresAt.toLocaleString() : 'Lifetime Access.'}`,
+            userId: payment.userId,
+            message: `Your payment for ${course.title} has been verified and approved! ${expiresAt ? 'Access expires on ' + expiresAt.toLocaleString() : 'Lifetime Access.'}`,
             isRead: false
         });
 
-        res.status(201).json(payment);
+        res.json({ message: 'Payment verified successfully', payment });
     } catch (error) {
-        console.error("Payment Processing Error:", error);
-        if (error.name === 'SequelizeUniqueConstraintError') {
-            return res.status(400).json({ message: 'Transaction ID already exists. Please check your ID.' });
-        }
-        if (error.name === 'SequelizeValidationError') {
-            return res.status(400).json({ message: 'Validation Error', error: error.errors.map(e => e.message).join(', ') });
-        }
-        res.status(400).json({ message: 'Payment processing failed', error: error.message, details: error });
+        console.error("Verification Error:", error);
+        res.status(500).json({ message: 'Verification failed', error: error.message });
     }
 };
+
 
 // @desc    Get all payments (Admin)
 // @route   GET /api/payments
@@ -170,6 +203,7 @@ const deletePayment = async (req, res) => {
 
 module.exports = {
     processPayment,
+    verifyPayment,
     getAllPayments,
     getMyPayments,
     createRazorpayOrder,

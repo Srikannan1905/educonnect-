@@ -34,13 +34,13 @@ export default function StaffRegister() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md transform transition-all hover:scale-[1.01]">
+            <div className="bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl shadow-2xl p-8 w-full max-w-md transform transition-all hover:scale-[1.01]">
                 <div className="text-center mb-8">
                     <div className="bg-blue-100 p-3 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                         <UserPlus size={32} className="text-blue-600" />
                     </div>
-                    <h2 className="text-3xl font-bold text-gray-800">Staff Registration</h2>
-                    <p className="text-gray-500 mt-2">Join our teaching team</p>
+                    <h2 className="text-3xl font-bold text-slate-200">Staff Registration</h2>
+                    <p className="text-slate-400 mt-2">Join our teaching team</p>
                 </div>
 
                 {error && <div className="bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm flex items-center gap-2">⚠️ {error}</div>}
@@ -48,8 +48,10 @@ export default function StaffRegister() {
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="relative">
+                        <label htmlFor="name" className="sr-only">Full Name</label>
                         <User className="absolute left-3 top-3 text-gray-400" size={20} />
                         <input
+                            id="name"
                             type="text"
                             name="name"
                             placeholder="Full Name"
@@ -61,8 +63,10 @@ export default function StaffRegister() {
                     </div>
 
                     <div className="relative">
+                        <label htmlFor="email" className="sr-only">Email Address</label>
                         <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
                         <input
+                            id="email"
                             type="email"
                             name="email"
                             placeholder="Email Address"
@@ -74,8 +78,10 @@ export default function StaffRegister() {
                     </div>
 
                     <div className="relative">
+                        <label htmlFor="password" className="sr-only">Password</label>
                         <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
                         <input
+                            id="password"
                             type="password"
                             name="password"
                             placeholder="Password"
@@ -87,8 +93,10 @@ export default function StaffRegister() {
                     </div>
 
                     <div className="relative">
+                        <label htmlFor="phone" className="sr-only">Phone Number</label>
                         <Phone className="absolute left-3 top-3 text-gray-400" size={20} />
                         <input
+                            id="phone"
                             type="tel"
                             name="phone"
                             placeholder="Phone Number"
@@ -99,8 +107,10 @@ export default function StaffRegister() {
                     </div>
 
                     <div className="relative">
+                        <label htmlFor="qualification" className="sr-only">Qualification / Subject</label>
                         <GraduationCap className="absolute left-3 top-3 text-gray-400" size={20} />
                         <input
+                            id="qualification"
                             type="text"
                             name="qualification"
                             placeholder="Qualification / Subject"
@@ -118,13 +128,13 @@ export default function StaffRegister() {
                     </button>
                 </form>
 
-                <p className="mt-6 text-center text-gray-600 text-sm">
+                <p className="mt-6 text-center text-slate-400 text-sm">
                     Already have an account?{' '}
                     <Link to="/login" className="text-blue-600 font-semibold hover:underline">
                         Login here
                     </Link>
                 </p>
-                <p className="mt-2 text-center text-gray-600 text-sm">
+                <p className="mt-2 text-center text-slate-400 text-sm">
                     Student?{' '}
                     <Link to="/register" className="text-blue-600 font-semibold hover:underline">
                         Register as Student

@@ -25,7 +25,12 @@ const Payment = sequelize.define('Payment', {
         defaultValue: DataTypes.NOW,
     },
     method: {
-        type: DataTypes.STRING, // e.g., 'Credit Card', 'UPI'
+        type: DataTypes.STRING, // e.g., 'UPI'
+        defaultValue: 'UPI',
+    },
+    screenshotUrl: {
+        type: DataTypes.STRING,
+        allowNull: true,
     },
 }, {
     timestamps: true,

@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 const { User } = require('../models');
+const { Op } = require('sequelize');
 
 // Register User
 exports.register = async (req, res) => {
@@ -51,6 +53,7 @@ exports.register = async (req, res) => {
             token,
             user: {
                 id: newUser.id,
+                registrationId: newUser.registrationId,
                 name: newUser.name,
                 email: newUser.email,
                 role: newUser.role,
@@ -133,6 +136,7 @@ exports.login = async (req, res) => {
             token,
             user: {
                 id: user.id,
+                registrationId: user.registrationId,
                 name: user.name,
                 email: user.email,
                 role: user.role,
@@ -157,34 +161,133 @@ exports.getUser = async (req, res) => {
     }
 };
 
-// Forgot Password (Simulated)
+// Forgot Password (Legacy or alternative entry)
 exports.forgotPassword = async (req, res) => {
-    try {
-        const { email, phone } = req.body;
+    // keeping this as a stub just in case
+    res.status(400).json({ message: 'Please use the phone verification method.' });
+};
 
-        let user;
-        if (email) {
-            user = await User.findOne({ where: { email } });
-        } else if (phone) {
-            // Find by phone (check both phone and parentPhone)
-            const { Op } = require('sequelize');
-            user = await User.findOne({
-                where: {
-                    [Op.or]: [{ phone: phone }, { parentPhone: phone }]
-                }
-            });
+// Step 1: Verify Phone User and return Security Question
+exports.verifyPhoneUser = async (req, res) => {
+    try {
+        const { phone } = req.body;
+
+        if (!phone) {
+            return res.status(400).json({ message: 'Phone number is required' });
         }
+
+        // Search in phone or parentPhone
+        const user = await User.findOne({
+            where: {
+                [Op.or]: [{ phone: phone }, { parentPhone: phone }]
+            }
+        });
 
         if (!user) {
-            // For security, do not reveal if user does not exist
-            return res.json({ message: 'If a user with this email/phone exists, a reset link has been sent.' });
+            return res.status(404).json({ message: 'No account found with that phone number.' });
         }
 
-        // Simulation
-        const contact = email || phone;
-        console.log(`[SIMULATION] Password reset requested for: ${contact}. Link sent to user ID: ${user.id}`);
-        res.json({ message: `Reset instructions sent to ${email ? 'email' : 'phone'}.` });
+        // Determine security question based on role and available data
+        let questionType = 'email';
+        let questionText = 'What is your registered email address?';
 
+        // Alternate questions can be implemented here if needed.
+
+        res.json({
+            message: 'User found',
+            userId: user.id,
+            questionType,
+            questionText
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+// Step 2: Verify Security Answer and Generate Reset Token
+exports.verifySecurityAnswer = async (req, res) => {
+    try {
+        const { userId, questionType, answer } = req.body;
+
+        if (!userId || !answer) {
+            return res.status(400).json({ message: 'Missing required field.' });
+        }
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        let isCorrect = false;
+
+        // Verify based on questionType
+        if (questionType === 'email') {
+            // Case insensitive exact comparison
+            if (user.email.toLowerCase() === answer.toLowerCase().trim()) {
+                isCorrect = true;
+            }
+        }
+        // Add other checks here if needed (e.g., questionType === 'registrationId')
+
+        if (!isCorrect) {
+            return res.status(400).json({ message: 'Incorrect security answer.' });
+        }
+
+        // Generate reset token directly
+        const resetToken = crypto.randomBytes(20).toString('hex');
+
+        // Hash and set to resetPasswordToken field
+        user.resetPasswordToken = crypto
+            .createHash('sha256')
+            .update(resetToken)
+            .digest('hex');
+
+        // Set expire: 10 mins
+        user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+
+        await user.save();
+
+        // Return token directly to frontend to proceed with reset
+        res.json({
+            message: 'Identity verified successfully.',
+            resetToken: resetToken
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+// Reset Password
+exports.resetPassword = async (req, res) => {
+    try {
+        // Get hashed token
+        const resetPasswordToken = crypto
+            .createHash('sha256')
+            .update(req.params.resetToken)
+            .digest('hex');
+
+        const user = await User.findOne({
+            where: {
+                resetPasswordToken,
+                resetPasswordExpire: { [Op.gt]: Date.now() }
+            }
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid or expired token' });
+        }
+
+        // Set new password
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(req.body.password, salt);
+        user.resetPasswordToken = null;
+        user.resetPasswordExpire = null;
+
+        await user.save();
+
+        res.json({ message: 'Password updated successfully. You can now login.' });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }

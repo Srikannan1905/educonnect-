@@ -51,7 +51,7 @@ export default function Register() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 relative overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center bg-transparent p-4 relative overflow-hidden">
             {/* Background decoration */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
                 <div className="absolute -top-20 -left-20 w-64 h-64 bg-blue-100 rounded-full opacity-50 blur-3xl"></div>
@@ -62,11 +62,11 @@ export default function Register() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-lg z-10 relative"
+                className="bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl p-8 rounded-2xl shadow-xl w-full max-w-lg z-10 relative"
             >
                 <div className="text-center mb-8">
-                    <h2 className="text-3xl font-extrabold text-gray-900">Create Account</h2>
-                    <p className="text-gray-500 mt-2">Join EduConnect today</p>
+                    <h2 className="text-3xl font-extrabold text-white">Create Account</h2>
+                    <p className="text-slate-400 mt-2">Join EduConnect today</p>
                 </div>
 
                 {error && (
@@ -82,13 +82,14 @@ export default function Register() {
                 <form onSubmit={handleRegister} className="space-y-5">
                     {/* Name Input */}
                     <div>
-                        <label className="block text-gray-700 text-sm font-bold mb-2 ml-1">Full Name</label>
+                        <label htmlFor="name" className="block text-slate-300 text-sm font-bold mb-2 ml-1">Full Name</label>
                         <div className="relative group">
                             <User className="absolute left-3 top-3 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={20} />
                             <input
+                                id="name"
                                 name="name"
                                 type="text"
-                                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-gray-50 focus:bg-white"
+                                className="w-full pl-10 pr-4 py-3 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-transparent focus:bg-white/10 text-slate-200"
                                 placeholder="John Doe"
                                 value={formData.name}
                                 onChange={handleChange}
@@ -99,13 +100,14 @@ export default function Register() {
 
                     {/* Email Input */}
                     <div>
-                        <label className="block text-gray-700 text-sm font-bold mb-2 ml-1">Email Address</label>
+                        <label htmlFor="email" className="block text-slate-300 text-sm font-bold mb-2 ml-1">Email Address</label>
                         <div className="relative group">
                             <Mail className="absolute left-3 top-3 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={20} />
                             <input
+                                id="email"
                                 name="email"
                                 type="email"
-                                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-gray-50 focus:bg-white"
+                                className="w-full pl-10 pr-4 py-3 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-transparent focus:bg-white/10 text-slate-200"
                                 placeholder="john@example.com"
                                 value={formData.email}
                                 onChange={handleChange}
@@ -116,7 +118,7 @@ export default function Register() {
 
                     {/* Role Selection */}
                     <div>
-                        <label className="block text-gray-700 text-sm font-bold mb-2 ml-1">I am a...</label>
+                        <label className="block text-slate-300 text-sm font-bold mb-2 ml-1">I am a...</label>
                         <div className="grid grid-cols-3 gap-3">
                             {['student', 'staff'].map((role) => (
                                 <button
@@ -125,7 +127,7 @@ export default function Register() {
                                     onClick={() => setFormData({ ...formData, role })}
                                     className={`py-2 px-4 rounded-lg text-sm font-semibold capitalize border transition-all ${formData.role === role
                                         ? 'bg-blue-600 text-white border-blue-600 shadow-md transform scale-105'
-                                        : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                                        : 'bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl text-slate-400 border-white/10 hover:bg-white/10'
                                         }`}
                                 >
                                     {role}
@@ -137,13 +139,14 @@ export default function Register() {
                     {/* Password Inputs */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-gray-700 text-sm font-bold mb-2 ml-1">Password</label>
+                            <label htmlFor="password" className="block text-slate-300 text-sm font-bold mb-2 ml-1">Password</label>
                             <div className="relative group">
                                 <Lock className="absolute left-3 top-3 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={20} />
                                 <input
+                                    id="password"
                                     name="password"
                                     type="password"
-                                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-gray-50 focus:bg-white"
+                                    className="w-full pl-10 pr-4 py-3 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-transparent focus:bg-white/10 text-slate-200"
                                     placeholder="••••••••"
                                     value={formData.password}
                                     onChange={handleChange}
@@ -152,13 +155,14 @@ export default function Register() {
                             </div>
                         </div>
                         <div>
-                            <label className="block text-gray-700 text-sm font-bold mb-2 ml-1">Confirm Password</label>
+                            <label htmlFor="confirmPassword" className="block text-slate-300 text-sm font-bold mb-2 ml-1">Confirm Password</label>
                             <div className="relative group">
                                 <Lock className="absolute left-3 top-3 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={20} />
                                 <input
+                                    id="confirmPassword"
                                     name="confirmPassword"
                                     type="password"
-                                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-gray-50 focus:bg-white"
+                                    className="w-full pl-10 pr-4 py-3 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-transparent focus:bg-white/10 text-slate-200"
                                     placeholder="••••••••"
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
@@ -173,15 +177,17 @@ export default function Register() {
                         <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
-                            className="space-y-4 pt-2 border-t border-gray-100"
+                            className="space-y-4 pt-2 border-t border-white/5"
                         >
-                            <h3 className="text-sm font-bold text-gray-700">Guardian Details (Required for verification)</h3>
+                            <h3 className="text-sm font-bold text-slate-300">Guardian Details (Required for verification)</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
+                                    <label htmlFor="parentName" className="sr-only">Parent Name</label>
                                     <input
+                                        id="parentName"
                                         name="parentName"
                                         type="text"
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-gray-50 focus:bg-white text-sm"
+                                        className="w-full px-4 py-3 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-transparent focus:bg-white/10 text-slate-200 text-sm"
                                         placeholder="Parent/Guardian Name"
                                         value={formData.parentName || ''}
                                         onChange={handleChange}
@@ -189,10 +195,12 @@ export default function Register() {
                                     />
                                 </div>
                                 <div>
+                                    <label htmlFor="parentPhone" className="sr-only">Parent Phone</label>
                                     <input
+                                        id="parentPhone"
                                         name="parentPhone"
                                         type="tel"
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-gray-50 focus:bg-white text-sm"
+                                        className="w-full px-4 py-3 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-transparent focus:bg-white/10 text-slate-200 text-sm"
                                         placeholder="Parent Phone Number"
                                         value={formData.parentPhone || ''}
                                         onChange={handleChange}
@@ -203,11 +211,13 @@ export default function Register() {
 
                             <div className="flex items-start gap-2 mt-2">
                                 <input
+                                    id="terms"
+                                    name="terms"
                                     type="checkbox"
                                     required
                                     className="mt-1 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                                 />
-                                <label className="text-xs text-gray-500">
+                                <label htmlFor="terms" className="text-xs text-slate-400">
                                     I confirm that I am 18+ years old OR I am registering under the guidance of my parent/guardian. I understand that my account will be verified before I can book demo classes.
                                 </label>
                             </div>
@@ -228,7 +238,7 @@ export default function Register() {
                 </form>
 
                 <div className="mt-8 text-center">
-                    <p className="text-gray-600">
+                    <p className="text-slate-400">
                         Already have an account?{' '}
                         <Link to="/login" className="text-blue-600 font-bold hover:underline transition-colors">
                             Log in here

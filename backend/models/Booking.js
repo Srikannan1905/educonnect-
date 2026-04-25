@@ -8,16 +8,28 @@ const Booking = sequelize.define('Booking', {
         primaryKey: true,
     },
     type: {
-        type: DataTypes.ENUM('demo', 'course', 'visit'), // Changed from bookingType
+        type: DataTypes.ENUM('demo', 'course', 'visit', 'hourly'), // Added hourly
         allowNull: false,
     },
     date: {
         type: DataTypes.DATE, // Changed from bookingDate
         defaultValue: DataTypes.NOW,
     },
+    startTime: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
     expiresAt: {
         type: DataTypes.DATE,
         allowNull: true, // Null means lifetime access (or handled elsewhere)
+    },
+    meetingLink: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    platform: {
+        type: DataTypes.STRING,
+        allowNull: true,
     },
     status: {
         type: DataTypes.ENUM('pending', 'confirmed', 'cancelled'),

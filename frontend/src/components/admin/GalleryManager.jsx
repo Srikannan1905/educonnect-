@@ -90,10 +90,10 @@ export default function GalleryManager() {
             <h2 className="text-2xl font-bold mb-6">Photo Gallery</h2>
 
             {/* Category Tabs */}
-            <div className="flex gap-4 mb-8 border-b">
+            <div className="flex gap-4 mb-8 border-b border-white/10">
                 <button
                     onClick={() => setActiveTab('all')}
-                    className={`pb-2 px-4 font-medium capitalize ${activeTab === 'all' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`pb-2 px-4 font-medium capitalize ${activeTab === 'all' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-400 hover:text-gray-700'}`}
                 >
                     All
                 </button>
@@ -101,7 +101,7 @@ export default function GalleryManager() {
                     <button
                         key={cat}
                         onClick={() => setActiveTab(cat)}
-                        className={`pb-2 px-4 font-medium capitalize ${activeTab === cat ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                        className={`pb-2 px-4 font-medium capitalize ${activeTab === cat ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-400 hover:text-gray-700'}`}
                     >
                         {cat}
                     </button>
@@ -110,7 +110,7 @@ export default function GalleryManager() {
 
             {/* Upload Section */}
             {user?.role === 'admin' && (
-                <div className="bg-white p-6 rounded-lg shadow mb-8">
+                <div className="bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl p-6 rounded-lg shadow mb-8">
                     <h3 className="font-bold mb-4 flex items-center gap-2"><Upload size={20} /> Upload New Photo</h3>
                     <form onSubmit={handleUpload} className="flex flex-col md:flex-row gap-4 items-end">
                         <div className="flex-1 w-full">
@@ -139,7 +139,7 @@ export default function GalleryManager() {
                             <label className="block text-sm font-medium mb-1">Select Image</label>
                             <input
                                 type="file"
-                                className="w-full p-2 border rounded bg-gray-50"
+                                className="w-full p-2 border rounded bg-transparent"
                                 onChange={e => setFile(e.target.files[0])}
                                 accept="image/*"
                                 required
@@ -159,7 +159,7 @@ export default function GalleryManager() {
             {/* Grid View */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {filteredPhotos.map((photo) => (
-                    <div key={photo.id} className="relative group bg-white rounded-lg shadow overflow-hidden">
+                    <div key={photo.id} className="relative group bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl rounded-lg overflow-x-auto shadow">
                         <img
                             src={`http://localhost:5000${photo.imageUrl}`}
                             alt={photo.title}
@@ -167,7 +167,7 @@ export default function GalleryManager() {
                         />
                         <div className="p-2">
                             <p className="font-medium text-sm truncate">{photo.title || 'Untitled'}</p>
-                            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full capitalize">{photo.category}</span>
+                            <span className="text-xs bg-white/10 text-slate-400 px-2 py-0.5 rounded-full capitalize">{photo.category}</span>
                         </div>
                         {user?.role === 'admin' && (
                             <button
@@ -180,7 +180,7 @@ export default function GalleryManager() {
                     </div>
                 ))}
                 {filteredPhotos.length === 0 && (
-                    <div className="col-span-full text-center py-12 text-gray-500">
+                    <div className="col-span-full text-center py-12 text-slate-400">
                         No photos found in this category.
                     </div>
                 )}

@@ -57,7 +57,7 @@ export default function Home() {
                             Join thousands of students achieving their dreams with our expert-led courses and personalized learning paths.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 items-center">
-                            <Link to="/courses" className="bg-yellow-400 text-blue-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition flex items-center justify-center gap-2 shadow-lg w-full sm:w-auto">
+                            <Link to="/courses" className="bg-yellow-400 text-blue-300 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition flex items-center justify-center gap-2 shadow-lg w-full sm:w-auto">
                                 Explore Courses <ArrowRight size={20} />
                             </Link>
                             <Link to="/register" className="border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white/10 transition flex items-center justify-center w-full sm:w-auto">
@@ -79,7 +79,7 @@ export default function Home() {
                         {/* Placeholder for a hero image or 3D element */}
                         <div className="bg-white/10 backdrop-blur-md p-8 rounded-2xl border border-white/20 shadow-2xl max-w-sm w-full">
                             <div className="flex items-center gap-4 mb-6">
-                                <div className="bg-yellow-400 p-3 rounded-full"><Award size={32} className="text-blue-900" /></div>
+                                <div className="bg-yellow-400 p-3 rounded-full"><Award size={32} className="text-blue-300" /></div>
                                 <div>
                                     <h3 className="font-bold text-xl">#1 Learning Platform</h3>
                                     <p className="text-blue-100 text-sm">Voted by Students</p>
@@ -99,11 +99,11 @@ export default function Home() {
             </section>
 
             {/* Features Section */}
-            <section className="py-20 bg-gray-50">
+            <section className="py-20 bg-transparent">
                 <div className="container mx-auto px-6">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Why Choose Us?</h2>
-                        <p className="text-gray-600 max-w-2xl mx-auto">We provide a comprehensive learning experience tailored to your needs.</p>
+                        <h2 className="text-3xl md:text-4xl font-bold text-slate-200 mb-4">Why Choose Us?</h2>
+                        <p className="text-slate-400 max-w-2xl mx-auto">We provide a comprehensive learning experience tailored to your needs.</p>
                     </div>
                     <div className="grid md:grid-cols-3 gap-8">
                         <FeatureCard
@@ -137,15 +137,15 @@ export default function Home() {
 
             {/* Instructors Section */}
             {instructors.length > 0 && (
-                <section className="py-20 bg-gray-50">
+                <section className="py-20 bg-transparent">
                     <div className="container mx-auto px-6">
                         <div className="text-center mb-16">
-                            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Meet Our Experts</h2>
-                            <p className="text-gray-600 max-w-2xl mx-auto">Learn from the best minds in the industry.</p>
+                            <h2 className="text-3xl md:text-4xl font-bold text-slate-200 mb-4">Meet Our Experts</h2>
+                            <p className="text-slate-400 max-w-2xl mx-auto">Learn from the best minds in the industry.</p>
                         </div>
                         <div className="grid md:grid-cols-4 gap-8">
                             {instructors.map(inst => (
-                                <div key={inst.id} className="bg-white p-6 rounded-xl shadow-lg text-center hover:-translate-y-2 transition duration-300">
+                                <div key={inst.id} className="bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl p-6 rounded-xl shadow-lg text-center hover:-translate-y-2 transition duration-300">
                                     <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-4 border-blue-100">
                                         {inst.profileImage ? (
                                             <img src={`http://localhost:5000${inst.profileImage}`} alt={inst.name} className="w-full h-full object-cover" />
@@ -155,7 +155,7 @@ export default function Home() {
                                             </div>
                                         )}
                                     </div>
-                                    <h3 className="font-bold text-xl text-gray-800">{inst.name}</h3>
+                                    <h3 className="font-bold text-xl text-slate-200">{inst.name}</h3>
                                     <p className="text-blue-600 text-sm font-medium mb-2">{inst.qualification || 'Instructor'}</p>
                                 </div>
                             ))}
@@ -165,30 +165,23 @@ export default function Home() {
             )}
 
             {/* Testimonials */}
-            <section className="py-20 bg-white">
+            <section className="py-20 bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl">
                 <div className="container mx-auto px-6">
                     <h2 className="text-3xl font-bold text-center mb-12">What Our Students Say</h2>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         <TestimonialCard
-                            quote="This platform changed my career path completely. Highly recommended!"
-                            author="Sarah J."
-                            role="Software Engineer"
+                            quote="The flexibility allows me to learn at my own pace. I can revisit the high-quality materials anytime, which is perfect for balancing with my full-time job."
                         />
                         <TestimonialCard
-                            quote="The instructors are amazing and the content is top-notch."
-                            author="Mike T."
-                            role="Data Analyst"
+                            quote="Having access to specialized skills and expert instructors from around the world has completely transformed my career trajectory. The structured courses are incredibly easy to follow."
                         />
                         <TestimonialCard
-                            quote="Flexible learning hours helped me balance work and study."
-                            author="Emily R."
-                            role="Product Manager"
+                            quote="The interactive quizzes and responsive feedback from professors make the learning process engaging. It's much better than just passively watching videos!"
                         />
                     </div>
                 </div>
             </section>
 
-            <WhatsAppButton />
         </div>
     );
 }
@@ -197,11 +190,11 @@ function FeatureCard({ icon, title, desc }) {
     return (
         <motion.div
             whileHover={{ y: -10 }}
-            className="bg-white p-8 rounded-xl shadow-lg border border-gray-100/50 hover:shadow-xl transition"
+            className="bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl p-8 rounded-xl shadow-lg border border-gray-100/50 hover:shadow-xl transition"
         >
-            <div className="mb-6 bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center">{icon}</div>
-            <h3 className="text-xl font-bold mb-3 text-gray-800">{title}</h3>
-            <p className="text-gray-600 leading-relaxed">{desc}</p>
+            <div className="mb-6 bg-transparent w-16 h-16 rounded-full flex items-center justify-center">{icon}</div>
+            <h3 className="text-xl font-bold mb-3 text-slate-200">{title}</h3>
+            <p className="text-slate-400 leading-relaxed">{desc}</p>
         </motion.div>
     );
 }
@@ -215,57 +208,13 @@ function StatItem({ number, label }) {
     );
 }
 
-function TestimonialCard({ quote, author, role }) {
+function TestimonialCard({ quote }) {
     return (
-        <div className="bg-gray-50 p-8 rounded-xl border border-gray-100">
+        <div className="bg-transparent p-8 rounded-xl border border-white/5">
             <div className="text-yellow-400 flex gap-1 mb-4">
                 {[...Array(5)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
             </div>
-            <p className="text-gray-700 italic mb-6">"{quote}"</p>
-            <div>
-                <h4 className="font-bold text-gray-900">{author}</h4>
-                <p className="text-gray-500 text-sm">{role}</p>
-            </div>
+            <p className="text-slate-300 italic mb-6">"{quote}"</p>
         </div>
-    );
-}
-
-// WhatsApp Floating Button Component
-function WhatsAppButton() {
-    const [whatsappNumber, setWhatsappNumber] = useState('917871444323'); // Default
-
-    useEffect(() => {
-        async function fetchSettings() {
-            try {
-                const res = await axios.get('/company');
-                if (res.data.whatsappNumber) {
-                    setWhatsappNumber(res.data.whatsappNumber);
-                }
-            } catch (err) {
-                // Keep default on error
-                console.error("Failed to fetch WhatsApp number");
-            }
-        };
-        fetchSettings();
-    }, []);
-
-    return (
-        <a
-            href={`https://wa.me/${whatsappNumber}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="fixed bottom-6 right-6 z-50 bg-green-500 text-white p-4 rounded-full shadow-2xl hover:bg-green-600 transition hover:scale-110 flex items-center justify-center"
-            title="Chat with us on WhatsApp"
-        >
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="32"
-                height="32"
-                fill="currentColor"
-                viewBox="0 0 16 16"
-            >
-                <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z" />
-            </svg>
-        </a>
     );
 }

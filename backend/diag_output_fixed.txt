@@ -1,0 +1,13 @@
+[dotenv@17.3.1] injecting env (3) from .env -- tip: ⚙️  override existing env vars with { override: true }
+--- COURSES ---
+ID: 08265fbe-593a-4105-ad69-c99204ba04db | Title: 12
+ID: 38b7361d-16f2-40d0-81a9-134678942d4a | Title: 10
+ID: 3a6573ca-c6ec-4e0b-9283-5c8ab7920962 | Title: Chemistry(11th,12th)
+ID: 08dc17d9-214e-4a14-bdec-7e20f73981f9 | Title: Physics
+ID: 9aa69897-5fb6-45b9-86bd-6c982a8aef9c | Title: physics
+ID: 3f5118ba-5e19-408a-94dd-ffde33c5e61b | Title: Advanced Physics
+
+--- QUIZZES ---
+ID: 0a7d0da5-c7be-46dd-a9cf-5a71ed3ee770 | Title: chemistry | CourseID: 3a6573ca-c6ec-4e0b-9283-5c8ab7920962
+ID: 51583af9-9276-4750-98fb-beb667947af9 | Title: MATHS | CourseID: 38b7361d-16f2-40d0-81a9-134678942d4a
+ID: 0230a100-4483-4147-ae2b-b11651704185 | Title: Physics Basics | CourseID: 3a6573ca-c6ec-4e0b-9283-5c8ab7920962

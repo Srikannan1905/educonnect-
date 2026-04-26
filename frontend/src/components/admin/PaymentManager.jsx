@@ -263,7 +263,7 @@ export default function PaymentManager() {
                         <div className="flex-1 overflow-auto p-4 flex justify-center bg-black/50">
                             {currentPayment.screenshotUrl ? (
                                 <img
-                                    src={`http://localhost:5000${currentPayment.screenshotUrl}`}
+                                    src={`${import.meta.env.VITE_API_URL}${currentPayment.screenshotUrl}`}
                                     alt="Payment Receipt"
                                     className="max-w-full max-h-[60vh] object-contain rounded border border-white/20"
                                 />

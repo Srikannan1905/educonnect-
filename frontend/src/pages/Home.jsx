@@ -148,7 +148,7 @@ export default function Home() {
                                 <div key={inst.id} className="bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl p-6 rounded-xl shadow-lg text-center hover:-translate-y-2 transition duration-300">
                                     <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-4 border-blue-100">
                                         {inst.profileImage ? (
-                                            <img src={`http://localhost:5000${inst.profileImage}`} alt={inst.name} className="w-full h-full object-cover" />
+                                            <img src={`${import.meta.env.VITE_API_URL}${inst.profileImage}`} alt={inst.name} className="w-full h-full object-cover" />
                                         ) : (
                                             <div className="w-full h-full bg-gray-200 flex items-center justify-center">
                                                 <Users size={32} className="text-gray-400" />

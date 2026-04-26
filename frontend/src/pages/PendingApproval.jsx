@@ -237,7 +237,7 @@ export default function PendingApproval() {
                                 {gallery.length > 0 ? gallery.map(item => (
                                     <div key={item.id} className="group relative rounded-2xl overflow-hidden aspect-square shadow-md border border-white/10">
                                         <img
-                                            src={`http://localhost:5000${item.imageUrl}`}
+                                            src={`${import.meta.env.VITE_API_URL}${item.imageUrl}`}
                                             alt={item.title}
                                             className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
                                         />

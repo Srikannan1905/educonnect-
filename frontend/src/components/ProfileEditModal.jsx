@@ -28,7 +28,7 @@ export default function ProfileEditModal({ isOpen, onClose, currentUser, onUpdat
                 parentPhone: currentUser.parentPhone || '',
                 profileImage: currentUser.profileImage || ''
             });
-            setPreviewImage(currentUser.profileImage ? `http://localhost:5000${currentUser.profileImage}` : null);
+            setPreviewImage(currentUser.profileImage ? `${import.meta.env.VITE_API_URL}${currentUser.profileImage}` : null);
         }
     }, [currentUser, isOpen]);
 

@@ -321,7 +321,7 @@ export default function Dashboard() {
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg overflow-hidden border-2 border-white/10">
                                     {user?.profileImage ? (
-                                        <img src={`http://localhost:5000${user.profileImage}`} className="w-full h-full object-cover" />
+                                        <img src={`${import.meta.env.VITE_API_URL}${user.profileImage}`} className="w-full h-full object-cover" />
                                     ) : (
                                         <User size={24} />
                                     )}
@@ -652,7 +652,7 @@ function CompanySettings() {
     useEffect(() => {
         async function fetchSettings() {
             try {
-                const res = await axios.get('http://localhost:5000/api/company');
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/company`);
                 setCompany(res.data);
             } catch (err) {
                 console.error(err);
@@ -668,7 +668,7 @@ function CompanySettings() {
     async function handleSave(e) {
         e.preventDefault();
         try {
-            await axios.put('http://localhost:5000/api/company', company);
+            await axios.put(`${import.meta.env.VITE_API_URL}/api/company`, company);
             setMessage('Settings updated successfully!');
             setTimeout(() => setMessage(''), 3000);
         } catch {
@@ -1099,7 +1099,7 @@ const StatusItem = ({ label, field, active, user, setUser, uploadingField, setUp
                     </span>
                     <div className="flex gap-2">
                         <a
-                            href={`http://localhost:5000${user[field]}`}
+                            href={`${import.meta.env.VITE_API_URL}${user[field]}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200 transition"

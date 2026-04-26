@@ -132,7 +132,7 @@ export default function Courses() {
             >
               <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white relative overflow-hidden">
                 {course.thumbnail ? (
-                  <img src={`http://localhost:5000${course.thumbnail}`} alt={course.title} className="w-full h-full object-cover transition duration-500 group-hover:scale-110" />
+                  <img src={`${import.meta.env.VITE_API_URL}${course.thumbnail}`} alt={course.title} className="w-full h-full object-cover transition duration-500 group-hover:scale-110" />
                 ) : (
                   <BookOpen size={56} className="transform group-hover:scale-110 transition duration-500 opacity-50" />
                 )}

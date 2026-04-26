@@ -73,7 +73,7 @@ export default function Gallery() {
                             >
                                 <div className="relative overflow-hidden">
                                     <img
-                                        src={`http://localhost:5000${photo.imageUrl}`}
+                                        src={`${import.meta.env.VITE_API_URL}${photo.imageUrl}`}
                                         alt={photo.title}
                                         className="w-full h-auto object-cover transform group-hover:scale-105 transition duration-500"
                                     />

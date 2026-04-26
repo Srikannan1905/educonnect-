@@ -161,7 +161,7 @@ export default function GalleryManager() {
                 {filteredPhotos.map((photo) => (
                     <div key={photo.id} className="relative group bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 shadow-2xl rounded-lg overflow-x-auto shadow">
                         <img
-                            src={`http://localhost:5000${photo.imageUrl}`}
+                            src={`${import.meta.env.VITE_API_URL}${photo.imageUrl}`}
                             alt={photo.title}
                             className="w-full h-40 object-cover"
                         />

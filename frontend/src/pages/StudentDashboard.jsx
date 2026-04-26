@@ -165,7 +165,7 @@ export default function StudentDashboard() {
                 <div className="flex flex-col items-center mb-8 pt-8 relative group">
                     <div className="w-20 h-20 rounded-full flex items-center justify-center mb-3 overflow-hidden border-2 border-blue-100 relative">
                         {user?.profileImage ? (
-                            <img src={`http://localhost:5000${user.profileImage}`} alt="Profile" className="w-full h-full object-cover" />
+                            <img src={`${import.meta.env.VITE_API_URL}${user.profileImage}`} alt="Profile" className="w-full h-full object-cover" />
                         ) : (
                             <div className="bg-blue-100 w-full h-full flex items-center justify-center text-blue-600">
                                 <User size={40} />
@@ -318,7 +318,7 @@ export default function StudentDashboard() {
 
                                                 <div className="flex items-center gap-3 p-4 bg-transparent rounded-2xl border border-gray-100/50 mb-6">
                                                     {booking.instructor?.profileImage ? (
-                                                        <img src={`http://localhost:5000${booking.instructor.profileImage}`} className="w-10 h-10 rounded-xl object-cover" />
+                                                        <img src={`${import.meta.env.VITE_API_URL}${booking.instructor.profileImage}`} className="w-10 h-10 rounded-xl object-cover" />
                                                     ) : (
                                                         <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-500"><User size={20} /></div>
                                                     )}
@@ -445,7 +445,7 @@ export default function StudentDashboard() {
                                             <div className="flex gap-4 mb-6">
                                                 <div className="w-20 h-20 rounded-2xl overflow-hidden border border-white/5 shadow-inner">
                                                     {instructor.profileImage ? (
-                                                        <img src={`http://localhost:5000${instructor.profileImage}`} className="w-full h-full object-cover" />
+                                                        <img src={`${import.meta.env.VITE_API_URL}${instructor.profileImage}`} className="w-full h-full object-cover" />
                                                     ) : (
                                                         <div className="w-full h-full bg-blue-50 flex items-center justify-center text-blue-400">
                                                             <User size={32} />

@@ -89,7 +89,7 @@ export default function CourseRoom() {
                             <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Subject Expert</h3>
                             <div className="flex items-center gap-4 mb-6">
                                 {booking.instructor?.profileImage || booking.Course?.instructor?.profileImage ? (
-                                    <img src={`http://localhost:5000${booking.instructor?.profileImage || booking.Course?.instructor?.profileImage}`} className="w-16 h-16 rounded-2xl object-cover" />
+                                    <img src={`${import.meta.env.VITE_API_URL}${booking.instructor?.profileImage || booking.Course?.instructor?.profileImage}`} className="w-16 h-16 rounded-2xl object-cover" />
                                 ) : (
                                     <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-500"><User size={32} /></div>
                                 )}

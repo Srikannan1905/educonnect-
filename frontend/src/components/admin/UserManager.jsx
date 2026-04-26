@@ -139,7 +139,7 @@ export default function UserManager({ role }) {
                             <tr key={user.id} className="border-b border-white/10 border-white/10 hover:bg-white/10">
                                 <td className="p-4 font-medium flex items-center gap-3">
                                     {user.profileImage ? (
-                                        <img src={`http://localhost:5000${user.profileImage}`} alt={user.name} className="w-10 h-10 rounded-full object-cover" />
+                                        <img src={`${import.meta.env.VITE_API_URL}${user.profileImage}`} alt={user.name} className="w-10 h-10 rounded-full object-cover" />
                                     ) : (
                                         <div className="bg-gray-200 p-2 rounded-full"><User size={20} /></div>
                                     )}

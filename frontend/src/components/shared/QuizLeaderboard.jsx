@@ -122,7 +122,7 @@ export default function QuizLeaderboard({ isOpen, onClose, quizId, quizTitle }) 
                                                 <span className="text-xs font-black text-slate-500 w-6">#{index + 4}</span>
                                                 <div className="w-10 h-10 rounded-xl bg-slate-700 overflow-hidden border border-white/10">
                                                     {item.student?.profileImage ? (
-                                                        <img src={`http://localhost:5000${item.student.profileImage}`} className="w-full h-full object-cover" />
+                                                        <img src={`${import.meta.env.VITE_API_URL}${item.student.profileImage}`} className="w-full h-full object-cover" />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center text-slate-400"><User size={20} /></div>
                                                     )}
@@ -162,7 +162,7 @@ function PodiumItem({ data, rank, delay, bgColor, borderColor, textColor, height
             <div className="relative mb-4 group">
                 <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-3xl overflow-hidden border-2 bg-slate-800 ${borderColor} relative z-10 group-hover:scale-110 transition duration-500`}>
                     {data.student?.profileImage ? (
-                        <img src={`http://localhost:5000${data.student.profileImage}`} className="w-full h-full object-cover" />
+                        <img src={`${import.meta.env.VITE_API_URL}${data.student.profileImage}`} className="w-full h-full object-cover" />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center text-slate-400"><User size={rank === 1 ? 40 : 32} /></div>
                     )}

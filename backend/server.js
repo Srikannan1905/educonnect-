@@ -50,6 +50,19 @@ app.get('/', (req, res) => {
     res.send('API is running...');
 });
 
+// Vercel Database Initialization Route
+app.get('/api/init-db', async (req, res) => {
+    try {
+        await sequelize.authenticate();
+        await heal(sequelize);
+        await sequelize.sync({ force: false });
+        res.status(200).json({ message: 'Database initialized and synced successfully!' });
+    } catch (err) {
+        console.error('Init DB Error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Final Error Handling Middleware
 app.use((err, req, res, next) => {
     console.error('GLOBAL ERROR:', err);
@@ -66,24 +79,27 @@ const startServer = async () => {
         await sequelize.authenticate();
         console.log('Database connected.');
 
-        // Step 1: Manual Schema Check (Heal)
-        // This is a permanent fix for SQLite schema desync errors
-        await heal(sequelize);
+        // Initialize and listen if we are not in Vercel Serverless environment
+        if (!process.env.VERCEL) {
+            // Step 1: Manual Schema Check (Heal)
+            await heal(sequelize);
 
-        // Step 2: Standard Sync (Safe for existing tables)
-        await sequelize.sync({ force: false });
-        console.log('Models synced.');
+            // Step 2: Standard Sync (Safe for existing tables)
+            await sequelize.sync({ force: false });
+            console.log('Models synced.');
 
-        // Listen on default interface
-        app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
-            console.log(`- Local: http://localhost:${PORT}`);
-            console.log(`- Network: http://0.0.0.0:${PORT}`);
-        });
-
+            // Listen on default interface
+            app.listen(PORT, () => {
+                console.log(`Server running on port ${PORT}`);
+                console.log(`- Local: http://localhost:${PORT}`);
+                console.log(`- Network: http://0.0.0.0:${PORT}`);
+            });
+        }
     } catch (error) {
         console.error('Unable to connect to the database:', error);
-        process.exit(1); // Exit if DB fails
+        if (!process.env.VERCEL) {
+            process.exit(1); // Exit if DB fails natively
+        }
     }
 };
 
@@ -101,3 +117,6 @@ process.on('unhandledRejection', (err) => {
 });
 
 startServer();
+
+// Export the app for Vercel Serverless Functions
+module.exports = app;

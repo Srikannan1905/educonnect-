@@ -1,0 +1,23 @@
+{
+  "name": "educonnect-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "vercel-build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend"
+  },
+  "dependencies": {
+    "axios": "^1.13.5",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.0.2",
+    "nodemailer": "^8.0.1",
+    "pg": "^8.18.0",
+    "pg-hstore": "^2.3.4",
+    "razorpay": "^2.9.6",
+    "sequelize": "^6.37.7",
+    "sqlite3": "^5.1.7"
+  }
+}

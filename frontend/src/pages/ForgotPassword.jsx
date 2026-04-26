@@ -20,7 +20,7 @@ export default function ForgotPassword() {
         setError('');
 
         try {
-            const res = await axios.post('/auth/verify-phone-user', { phone });
+            const res = await axios.post(import.meta.env.VITE_API_BASE_URL + '/auth/verify-phone-user', { phone });
             setUserId(res.data.userId);
             setQuestionType(res.data.questionType);
             setQuestionText(res.data.questionText);
@@ -35,7 +35,7 @@ export default function ForgotPassword() {
         setError('');
 
         try {
-            const res = await axios.post('/auth/verify-security-answer', {
+            const res = await axios.post(import.meta.env.VITE_API_BASE_URL + '/auth/verify-security-answer', {
                 userId,
                 questionType,
                 answer

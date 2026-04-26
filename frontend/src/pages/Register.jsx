@@ -32,7 +32,7 @@ export default function Register() {
 
         setLoading(true);
         try {
-            await axios.post('/auth/register', {
+            await axios.post(import.meta.env.VITE_API_BASE_URL + '/auth/register', {
                 name: formData.name,
                 email: formData.email,
                 password: formData.password,

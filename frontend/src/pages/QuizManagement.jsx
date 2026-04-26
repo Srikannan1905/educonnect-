@@ -39,7 +39,7 @@ export default function QuizManagement() {
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this assessment? All student results will be lost.")) return;
         try {
-            await axios.delete(`/quizzes/${id}`);
+            await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/quizzes/${id}`);
             setQuizzes(quizzes.filter(q => q.id !== id));
         } catch (err) {
             alert("Failed to delete quiz");

@@ -22,7 +22,7 @@ export default function BookingManager() {
             const token = localStorage.getItem('token');
             // If admin, they can see all. If staff, the backend should ideally filter, but we'll fetch all and they'll be filtered if the API does it.
             // Using the existing getting all bookings route.
-            const res = await axios.get('/bookings', {
+            const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/bookings', {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -44,7 +44,7 @@ export default function BookingManager() {
     async function handleStatusUpdate(id, status) {
         try {
             const token = localStorage.getItem('token');
-            await axios.put(`/bookings/${id}/status`, { status }, {
+            await axios.put(`${import.meta.env.VITE_API_BASE_URL}/bookings/${id}/status`, { status }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             addToast(`Booking ${status}.`, 'success');
@@ -59,7 +59,7 @@ export default function BookingManager() {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            await axios.post(`/bookings/${selectedBookingId}/send-link`, linkForm, {
+            await axios.post(`${import.meta.env.VITE_API_BASE_URL}/bookings/${selectedBookingId}/send-link`, linkForm, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             addToast('Meeting link sent to student successfully.', 'success');

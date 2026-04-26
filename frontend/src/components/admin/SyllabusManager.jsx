@@ -23,7 +23,7 @@ export default function SyllabusManager() {
     const fetchSyllabus = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('/syllabus', {
+            const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/syllabus', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setSyllabusList(res.data);
@@ -51,7 +51,7 @@ export default function SyllabusManager() {
             formData.append('title', newSyllabus.title);
             formData.append('description', newSyllabus.description);
 
-            await axios.post('/syllabus', formData, {
+            await axios.post(import.meta.env.VITE_API_BASE_URL + '/syllabus', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${token}`
@@ -75,7 +75,7 @@ export default function SyllabusManager() {
         if (!window.confirm('Are you sure you want to delete this syllabus?')) return;
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`/syllabus/${id}`, {
+            await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/syllabus/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchSyllabus();

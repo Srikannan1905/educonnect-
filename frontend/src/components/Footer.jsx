@@ -10,7 +10,7 @@ export default function Footer() {
     useEffect(() => {
         async function fetchSettings() {
             try {
-                const res = await axios.get('/company');
+                const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/company');
                 setCompany(res.data);
             } catch (err) {
                 console.error("Failed to fetch company settings for footer");

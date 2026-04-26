@@ -28,7 +28,7 @@ export default function Home() {
 
                 // Let's create a new route /api/public/instructors or similar.
                 // For now, I'll just write the fetch logic and I will fix the backend in the next step.
-                const res = await axios.get('/users/public/instructors');
+                const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/users/public/instructors');
                 if (Array.isArray(res.data)) {
                     setInstructors(res.data);
                 }

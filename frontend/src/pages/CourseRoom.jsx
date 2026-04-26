@@ -16,14 +16,14 @@ export default function CourseRoom() {
         const fetchCourseData = async () => {
             try {
                 // Here we fetch the booking detail which includes course and instructor
-                const res = await axios.get(`/bookings/my`); // For demo, we filter from my bookings
+                const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/bookings/my`); // For demo, we filter from my bookings
                 const currentBooking = res.data.find(b => b.id === id || b.courseId === id);
                 setBooking(currentBooking);
 
                 if (currentBooking && (currentBooking.courseId || id)) {
                     const cId = currentBooking.courseId || id;
                     try {
-                        const sessRes = await axios.get(`/sessions/course/${cId}`);
+                        const sessRes = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/sessions/course/${cId}`);
                         setSessions(sessRes.data);
                     } catch (e) {
                         console.error('Failed to load course sessions', e);

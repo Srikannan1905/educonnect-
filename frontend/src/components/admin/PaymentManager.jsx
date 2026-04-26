@@ -27,7 +27,7 @@ export default function PaymentManager() {
         try {
             setLoading(true);
             const token = localStorage.getItem('token');
-            const res = await axios.get('/payments', {
+            const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/payments', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (Array.isArray(res.data)) {
@@ -62,7 +62,7 @@ export default function PaymentManager() {
                 throw new Error("Payment ID is missing in frontend object");
             }
 
-            await axios.delete(`/payments/${paymentToDelete.id}`, {
+            await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/payments/${paymentToDelete.id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -87,7 +87,7 @@ export default function PaymentManager() {
         setIsVerifying(true);
         try {
             const token = localStorage.getItem('token');
-            await axios.post(`/payments/${paymentId}/verify`, { status }, {
+            await axios.post(`${import.meta.env.VITE_API_BASE_URL}/payments/${paymentId}/verify`, { status }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             addToast(`Payment marked as ${status}`, "success");

@@ -20,7 +20,7 @@ export default function GalleryManager() {
 
     async function fetchPhotos() {
         try {
-            const res = await axios.get('/gallery');
+            const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/gallery');
             if (Array.isArray(res.data)) {
                 setPhotos(res.data);
             }
@@ -42,7 +42,7 @@ export default function GalleryManager() {
     async function handleDelete(id) {
         if (confirm('Delete this photo?')) {
             try {
-                await axios.delete(`/gallery/${id}`, getAuthHeader());
+                await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/gallery/${id}`, getAuthHeader());
                 fetchPhotos();
             } catch {
                 alert('Failed to delete photo');
@@ -61,7 +61,7 @@ export default function GalleryManager() {
 
         try {
             // 1. Upload Image
-            const uploadRes = await axios.post('/upload', formData, {
+            const uploadRes = await axios.post(import.meta.env.VITE_API_BASE_URL + '/upload', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${token}`
@@ -70,7 +70,7 @@ export default function GalleryManager() {
             const imageUrl = uploadRes.data;
 
             // 2. Save to Gallery
-            await axios.post('/gallery', { title, imageUrl, category }, getAuthHeader());
+            await axios.post(import.meta.env.VITE_API_BASE_URL + '/gallery', { title, imageUrl, category }, getAuthHeader());
 
             setFile(null);
             setTitle('');

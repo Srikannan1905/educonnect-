@@ -22,7 +22,7 @@ export default function QuizPlayer() {
     useEffect(() => {
         const loadQuizData = async () => {
             try {
-                const res = await axios.get(`/quizzes/view/${id}`);
+                const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/quizzes/view/${id}`);
                 setQuiz(res.data);
                 if (res.data.timeLimit) {
                     setTimeLeft(res.data.timeLimit * 60);
@@ -70,7 +70,7 @@ export default function QuizPlayer() {
     const handleSubmit = async () => {
         setSubmitting(true);
         try {
-            const res = await axios.post(`/quizzes/${id}/submit`, { answers });
+            const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/quizzes/${id}/submit`, { answers });
             setResult(res.data);
             setIsFinished(true);
         } catch (err) {

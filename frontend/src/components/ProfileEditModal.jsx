@@ -60,7 +60,7 @@ export default function ProfileEditModal({ isOpen, onClose, currentUser, onUpdat
                 uploadData.append('image', imageFile);
 
                 const token = localStorage.getItem('token');
-                const uploadRes = await axios.post('/upload', uploadData, {
+                const uploadRes = await axios.post(import.meta.env.VITE_API_BASE_URL + '/upload', uploadData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         Authorization: `Bearer ${token}`
@@ -76,7 +76,7 @@ export default function ProfileEditModal({ isOpen, onClose, currentUser, onUpdat
                 profileImage: imageUrl
             };
 
-            const res = await axios.put(`/users/${currentUser.id}`, updateData, {
+            const res = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/users/${currentUser.id}`, updateData, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 

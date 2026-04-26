@@ -36,21 +36,21 @@ export default function StudentDashboard() {
     async function fetchData() {
         try {
             if (activeTab === 'bookings' || activeTab === 'courses') {
-                const res = await axios.get('/bookings/my');
+                const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/bookings/my');
                 if (Array.isArray(res.data)) {
                     setBookings(res.data);
                 }
             } else if (activeTab === 'payments') {
-                const res = await axios.get('/payments/my');
+                const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/payments/my');
                 if (Array.isArray(res.data)) {
                     setPayments(res.data);
                 }
             } else if (activeTab === 'browse-tutors') {
-                const res = await axios.get('/users/public/instructors');
+                const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/users/public/instructors');
                 setInstructors(res.data);
             } else if (activeTab === 'activity-feed') {
                 const token = localStorage.getItem('token');
-                const res = await axios.get('/users/activities', {
+                const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/users/activities', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setActivities(res.data);
@@ -74,7 +74,7 @@ export default function StudentDashboard() {
         setBookingLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post('/bookings/demo', {
+            const res = await axios.post(import.meta.env.VITE_API_BASE_URL + '/bookings/demo', {
                 staffId: selectedTutor.id,
                 subject: selectedTutor.subjects?.split(',')[0]?.trim() || 'General',
                 date: bookingDate,
@@ -101,7 +101,7 @@ export default function StudentDashboard() {
         try {
             const token = localStorage.getItem('token');
             const subject = tutor.subjects?.split(',')[0]?.trim() || 'Hourly Subject';
-            const res = await axios.post('/bookings/hourly', {
+            const res = await axios.post(import.meta.env.VITE_API_BASE_URL + '/bookings/hourly', {
                 staffId: tutor.id,
                 subject: subject,
                 date: bookingDate,

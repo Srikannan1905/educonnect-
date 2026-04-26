@@ -17,7 +17,7 @@ export default function PaymentPage() {
 
     async function fetchCourse() {
         try {
-            const res = await axios.get(`/courses/${courseId}`);
+            const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/courses/${courseId}`);
             setCourse(res.data);
         } catch (err) {
             console.error(err);
@@ -59,7 +59,7 @@ export default function PaymentPage() {
             formData.append('transactionId', transactionId);
             formData.append('screenshot', screenshot);
 
-            await axios.post('/payments', formData, {
+            await axios.post(import.meta.env.VITE_API_BASE_URL + '/payments', formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'

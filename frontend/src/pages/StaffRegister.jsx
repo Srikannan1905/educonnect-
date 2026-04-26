@@ -24,7 +24,7 @@ export default function StaffRegister() {
         setError('');
         setSuccess('');
         try {
-            await axios.post('/auth/register-staff', formData);
+            await axios.post(import.meta.env.VITE_API_BASE_URL + '/auth/register-staff', formData);
             setSuccess('Registration successful! Please wait for Admin approval. Redirecting to login...');
             setTimeout(() => navigate('/login'), 3000);
         } catch (err) {

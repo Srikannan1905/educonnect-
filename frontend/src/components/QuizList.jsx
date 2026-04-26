@@ -12,7 +12,7 @@ export default function QuizList({ courseId }) {
     useEffect(() => {
         const fetchQuizzes = async () => {
             try {
-                const res = await axios.get(`/quizzes/course/${courseId}`);
+                const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/quizzes/course/${courseId}`);
                 setQuizzes(res.data);
             } catch (err) {
                 console.error("Failed to load quizzes", err);

@@ -58,7 +58,7 @@ export default function Dashboard() {
     async function fetchNotifications() {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('/notifications', {
+            const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/notifications', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setNotifications(res.data);
@@ -70,7 +70,7 @@ export default function Dashboard() {
     async function fetchStaffRequests() {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('/users/staff-requests', {
+            const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/users/staff-requests', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setStaffRequests(res.data);
@@ -82,7 +82,7 @@ export default function Dashboard() {
     async function fetchCourseRequests() {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('/courses/requests', {
+            const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/courses/requests', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setCourseRequests(res.data);
@@ -94,7 +94,7 @@ export default function Dashboard() {
     async function fetchActivityLogs() {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('/users/activities', {
+            const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/users/activities', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setActivities(res.data);
@@ -119,7 +119,7 @@ export default function Dashboard() {
     async function markAsRead(id) {
         try {
             const token = localStorage.getItem('token');
-            await axios.put(`/notifications/${id}/read`, {}, {
+            await axios.put(`${import.meta.env.VITE_API_BASE_URL}/notifications/${id}/read`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchNotifications();
@@ -131,7 +131,7 @@ export default function Dashboard() {
     async function handleStaffAction(id, action) {
         try {
             const token = localStorage.getItem('token');
-            await axios.put(`/users/staff-requests/${id}/${action}`, {}, {
+            await axios.put(`${import.meta.env.VITE_API_BASE_URL}/users/staff-requests/${id}/${action}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchStaffRequests();
@@ -144,7 +144,7 @@ export default function Dashboard() {
     async function handleCourseRequestAction(id, status) {
         try {
             const token = localStorage.getItem('token');
-            await axios.put(`/courses/requests/${id}`, { status }, {
+            await axios.put(`${import.meta.env.VITE_API_BASE_URL}/courses/requests/${id}`, { status }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchCourseRequests();
@@ -522,11 +522,11 @@ function Overview({ setActiveTab, user }) {
                 const token = localStorage.getItem('token');
                 const authHeader = { headers: { Authorization: `Bearer ${token}` } };
                 const [coursesRes, usersRes, galleryRes, paymentsRes, proposalsRes] = await Promise.all([
-                    axios.get('/courses'),
-                    axios.get('/users', authHeader),
-                    axios.get('/gallery'),
-                    axios.get('/payments', authHeader),
-                    axios.get('/courses/requests', authHeader)
+                    axios.get(import.meta.env.VITE_API_BASE_URL + '/courses'),
+                    axios.get(import.meta.env.VITE_API_BASE_URL + '/users', authHeader),
+                    axios.get(import.meta.env.VITE_API_BASE_URL + '/gallery'),
+                    axios.get(import.meta.env.VITE_API_BASE_URL + '/payments', authHeader),
+                    axios.get(import.meta.env.VITE_API_BASE_URL + '/courses/requests', authHeader)
                 ]);
                 setStats({
                     courses: Array.isArray(coursesRes.data) ? coursesRes.data.length : 0,
@@ -652,7 +652,7 @@ function CompanySettings() {
     useEffect(() => {
         async function fetchSettings() {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/company`);
+                const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/company');
                 setCompany(res.data);
             } catch (err) {
                 console.error(err);
@@ -668,7 +668,7 @@ function CompanySettings() {
     async function handleSave(e) {
         e.preventDefault();
         try {
-            await axios.put(`${import.meta.env.VITE_API_URL}/api/company`, company);
+            await axios.put(import.meta.env.VITE_API_BASE_URL + '/company', company);
             setMessage('Settings updated successfully!');
             setTimeout(() => setMessage(''), 3000);
         } catch {
@@ -720,8 +720,8 @@ function StaffOverview({ user, setUser }) {
                 const token = localStorage.getItem('token');
                 const authHeader = { headers: { Authorization: `Bearer ${token}` } };
                 const [sessionsRes, coursesRes] = await Promise.all([
-                    axios.get('/sessions/staff', authHeader),
-                    axios.get('/courses', authHeader)
+                    axios.get(import.meta.env.VITE_API_BASE_URL + '/sessions/staff', authHeader),
+                    axios.get(import.meta.env.VITE_API_BASE_URL + '/courses', authHeader)
                 ]);
                 const mySessions = Array.isArray(sessionsRes.data) ? sessionsRes.data.filter(s => s.staffId === user.id) : [];
                 const myCourses = Array.isArray(coursesRes.data) ? coursesRes.data.filter(c => c.staffId === user.id) : [];
@@ -739,7 +739,7 @@ function StaffOverview({ user, setUser }) {
         setIsSaving(true);
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.put(`/users/${user.id}`,
+            const res = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/users/${user.id}`,
                 { specialization, bio, subjects },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -754,7 +754,7 @@ function StaffOverview({ user, setUser }) {
         setIsSubmitting(true);
         try {
             const token = localStorage.getItem('token');
-            await axios.post('/courses/request', newProposal, { headers: { Authorization: `Bearer ${token}` } });
+            await axios.post(import.meta.env.VITE_API_BASE_URL + '/courses/request', newProposal, { headers: { Authorization: `Bearer ${token}` } });
             alert('Course proposal submitted!');
             setIsProposalModalOpen(false);
             setNewProposal({ title: '', subject: '', board: 'CBSE', mode: 'online', description: '' });
@@ -1043,12 +1043,12 @@ const StatusItem = ({ label, field, active, user, setUser, uploadingField, setUp
 
         try {
             const token = localStorage.getItem('token');
-            const uploadRes = await axios.post('/upload', formData, {
+            const uploadRes = await axios.post(import.meta.env.VITE_API_BASE_URL + '/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
             });
 
             const filePath = uploadRes.data;
-            const updateRes = await axios.put(`/users/${user.id}`, { [field]: filePath }, {
+            const updateRes = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/users/${user.id}`, { [field]: filePath }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -1071,7 +1071,7 @@ const StatusItem = ({ label, field, active, user, setUser, uploadingField, setUp
 
         try {
             const token = localStorage.getItem('token');
-            const updateRes = await axios.put(`/users/${user.id}`, { [field]: null }, {
+            const updateRes = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/users/${user.id}`, { [field]: null }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setUser(updateRes.data);
@@ -1141,8 +1141,8 @@ function StudentOverview({ user, setActiveTab }) {
                 const token = localStorage.getItem('token');
                 const authHeader = { headers: { Authorization: `Bearer ${token}` } };
                 const [bookingsRes, sessionsRes] = await Promise.all([
-                    axios.get('/bookings/my', authHeader),
-                    axios.get('/sessions/student', authHeader)
+                    axios.get(import.meta.env.VITE_API_BASE_URL + '/bookings/my', authHeader),
+                    axios.get(import.meta.env.VITE_API_BASE_URL + '/sessions/student', authHeader)
                 ]);
 
                 const uniqueCourses = new Set(bookingsRes.data.map(b => b.courseId).filter(Boolean));

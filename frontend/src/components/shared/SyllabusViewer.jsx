@@ -15,7 +15,7 @@ export default function SyllabusViewer() {
     const fetchSyllabus = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('/syllabus', {
+            const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/syllabus', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setSyllabusList(res.data);
@@ -29,7 +29,7 @@ export default function SyllabusViewer() {
     const handleDownload = async (item) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`/syllabus/download/${item.id}`, {
+            const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/syllabus/download/${item.id}`, {
                 headers: { Authorization: `Bearer ${token}` },
                 responseType: 'blob'
             });

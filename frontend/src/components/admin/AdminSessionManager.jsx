@@ -26,8 +26,8 @@ export default function AdminSessionManager() {
         setIsLoading(true);
         try {
             const [sessionsRes, coursesRes] = await Promise.all([
-                axios.get('/sessions', authHeader),
-                axios.get('/courses', authHeader)
+                axios.get(import.meta.env.VITE_API_BASE_URL + '/sessions', authHeader),
+                axios.get(import.meta.env.VITE_API_BASE_URL + '/courses', authHeader)
             ]);
             setSessions(sessionsRes.data);
             setCourses(coursesRes.data);
@@ -68,9 +68,9 @@ export default function AdminSessionManager() {
         setIsSubmitting(true);
         try {
             if (editingSession) {
-                await axios.put(`/sessions/${editingSession.id}`, formData, authHeader);
+                await axios.put(`${import.meta.env.VITE_API_BASE_URL}/sessions/${editingSession.id}`, formData, authHeader);
             } else {
-                await axios.post('/sessions', formData, authHeader);
+                await axios.post(import.meta.env.VITE_API_BASE_URL + '/sessions', formData, authHeader);
             }
             setIsModalOpen(false);
             fetchData();
@@ -84,7 +84,7 @@ export default function AdminSessionManager() {
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure you want to permanently delete this session?')) return;
         try {
-            await axios.delete(`/sessions/${id}`, authHeader);
+            await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/sessions/${id}`, authHeader);
             setSessions(sessions.filter(s => s.id !== id));
         } catch (error) {
             alert('Failed to delete session');

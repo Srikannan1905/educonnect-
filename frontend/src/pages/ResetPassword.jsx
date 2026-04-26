@@ -30,7 +30,7 @@ export default function ResetPassword() {
 
         setLoading(true);
         try {
-            await axios.put(`/auth/reset-password/${token}`, { password });
+            await axios.put(`${import.meta.env.VITE_API_BASE_URL}/auth/reset-password/${token}`, { password });
             setSuccess(true);
             setTimeout(() => navigate('/login'), 3000);
         } catch (err) {

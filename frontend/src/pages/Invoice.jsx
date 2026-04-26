@@ -14,7 +14,7 @@ export default function Invoice() {
     useEffect(() => {
         async function fetchInvoice() {
             try {
-                const res = await axios.get(`/invoices/${paymentId}`);
+                const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/invoices/${paymentId}`);
                 setData(res.data);
             } catch (err) {
                 console.error(err);

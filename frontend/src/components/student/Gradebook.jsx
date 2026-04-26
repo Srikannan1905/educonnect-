@@ -12,7 +12,7 @@ export default function Gradebook() {
     useEffect(() => {
         const fetchResults = async () => {
             try {
-                const res = await axios.get('/quizzes/results/my');
+                const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/quizzes/results/my');
                 setResults(res.data);
             } catch (err) {
                 console.error("Failed to fetch results", err);

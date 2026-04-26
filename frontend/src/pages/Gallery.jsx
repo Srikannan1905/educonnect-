@@ -13,7 +13,7 @@ export default function Gallery() {
     useEffect(() => {
         async function fetchPhotos() {
             try {
-                const res = await axios.get('/gallery');
+                const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/gallery');
                 if (Array.isArray(res.data)) {
                     setPhotos(res.data);
                 }

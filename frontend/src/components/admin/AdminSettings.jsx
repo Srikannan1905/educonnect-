@@ -37,7 +37,7 @@ export default function AdminSettings() {
 
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.put('/users/profile/credentials', formData, {
+            const res = await axios.put(import.meta.env.VITE_API_BASE_URL + '/users/profile/credentials', formData, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 

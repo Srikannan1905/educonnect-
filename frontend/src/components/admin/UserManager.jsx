@@ -36,7 +36,7 @@ export default function UserManager({ role }) {
         if (confirm('Are you sure you want to delete this user?')) {
             try {
                 const token = localStorage.getItem('token');
-                await axios.delete(`/users/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+                await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/users/${id}`, { headers: { Authorization: `Bearer ${token}` } });
                 fetchUsers();
             } catch (err) {
                 const message = err.response?.data?.message || 'Failed to delete user';
@@ -76,7 +76,7 @@ export default function UserManager({ role }) {
             uploadData.append('image', formData.file);
             const token = localStorage.getItem('token');
             try {
-                const uploadRes = await axios.post('/upload', uploadData, {
+                const uploadRes = await axios.post(import.meta.env.VITE_API_BASE_URL + '/upload', uploadData, {
                     headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
                 });
                 profileImageUrl = uploadRes.data;
@@ -95,7 +95,7 @@ export default function UserManager({ role }) {
             };
             delete dataToSend.file;
 
-            await axios.put(`/users/${currentUser.id}`, dataToSend, {
+            await axios.put(`${import.meta.env.VITE_API_BASE_URL}/users/${currentUser.id}`, dataToSend, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setIsModalOpen(false);

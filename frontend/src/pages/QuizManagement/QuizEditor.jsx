@@ -31,7 +31,7 @@ export default function QuizEditor() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const courseRes = await axios.get('/courses');
+                const courseRes = await axios.get(import.meta.env.VITE_API_BASE_URL + '/courses');
                 // Filter courses: Staff only see their own, Admin sees all
                 const availableCourses = (user.role === 'admin' || user.role === 'staff')
                     ? courseRes.data
@@ -40,7 +40,7 @@ export default function QuizEditor() {
                 setCourses(availableCourses);
 
                 if (isEdit) {
-                    const quizRes = await axios.get(`/quizzes/${id}`);
+                    const quizRes = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/quizzes/${id}`);
                     setQuizData(quizRes.data);
                 }
             } catch (err) {
@@ -83,9 +83,9 @@ export default function QuizEditor() {
         setSaving(true);
         try {
             if (isEdit) {
-                await axios.put(`/quizzes/${id}`, quizData);
+                await axios.put(`${import.meta.env.VITE_API_BASE_URL}/quizzes/${id}`, quizData);
             } else {
-                await axios.post('/quizzes', quizData);
+                await axios.post(import.meta.env.VITE_API_BASE_URL + '/quizzes', quizData);
             }
             navigate('/dashboard/quizzes');
         } catch (err) {

@@ -13,7 +13,7 @@ export default function Login() {
         e.preventDefault();
         setError('');
         try {
-            const res = await axios.post('/auth/login', { email, password });
+            const res = await axios.post(import.meta.env.VITE_API_BASE_URL + '/auth/login', { email, password });
             const { token, user } = res.data;
 
             localStorage.setItem('token', token);

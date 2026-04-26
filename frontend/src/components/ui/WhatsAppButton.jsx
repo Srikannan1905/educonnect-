@@ -9,7 +9,7 @@ export default function WhatsAppButton() {
     useEffect(() => {
         async function fetchSettings() {
             try {
-                const res = await axios.get('/company');
+                const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/company');
                 if (res.data.whatsappNumber) {
                     setWhatsappNumber(res.data.whatsappNumber);
                 }

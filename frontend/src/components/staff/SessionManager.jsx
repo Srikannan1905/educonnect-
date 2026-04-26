@@ -30,7 +30,7 @@ export default function SessionManager({ user }) {
 
             const [sessionsRes, coursesRes] = await Promise.all([
                 axios.get(url, authHeader),
-                axios.get('/courses', authHeader)
+                axios.get(import.meta.env.VITE_API_BASE_URL + '/courses', authHeader)
             ]);
 
             if (Array.isArray(sessionsRes.data)) setSessions(sessionsRes.data);
@@ -55,10 +55,10 @@ export default function SessionManager({ user }) {
             const authHeader = { headers: { Authorization: `Bearer ${token}` } };
 
             if (isEditing) {
-                await axios.put(`/sessions/${currentSessionId}`, formData, authHeader);
+                await axios.put(`${import.meta.env.VITE_API_BASE_URL}/sessions/${currentSessionId}`, formData, authHeader);
                 alert('Session updated successfully!');
             } else {
-                await axios.post('/sessions', formData, authHeader);
+                await axios.post(import.meta.env.VITE_API_BASE_URL + '/sessions', formData, authHeader);
                 alert('Session scheduled and notifications sent!');
             }
 
@@ -105,7 +105,7 @@ export default function SessionManager({ user }) {
         if (!window.confirm('Are you sure you want to permanently remove this scheduled class?')) return;
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`/sessions/${sessionId}`, {
+            await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/sessions/${sessionId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchData();
@@ -117,7 +117,7 @@ export default function SessionManager({ user }) {
     async function handleSessionStatus(sessionId, action) {
         try {
             const token = localStorage.getItem('token');
-            await axios.put(`/sessions/${sessionId}/${action}`, {}, {
+            await axios.put(`${import.meta.env.VITE_API_BASE_URL}/sessions/${sessionId}/${action}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchData(); // Refresh list to update status

@@ -18,7 +18,7 @@ export default function PendingApproval() {
                 if (storedUser) {
                     const parsedUser = JSON.parse(storedUser);
                     // Fetch fresh user data to get latest status
-                    const userRes = await axios.get(`/users/${parsedUser.id}`);
+                    const userRes = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/users/${parsedUser.id}`);
                     setUser(userRes.data);
 
                     // If user is now active, redirect to dashboard
@@ -30,8 +30,8 @@ export default function PendingApproval() {
                 }
 
                 const [companyRes, galleryRes] = await Promise.all([
-                    axios.get('/company'),
-                    axios.get('/gallery')
+                    axios.get(import.meta.env.VITE_API_BASE_URL + '/company'),
+                    axios.get(import.meta.env.VITE_API_BASE_URL + '/gallery')
                 ]);
                 setCompany(companyRes.data);
                 setGallery(Array.isArray(galleryRes.data) ? galleryRes.data.slice(0, 4) : []);

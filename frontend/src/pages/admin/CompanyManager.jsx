@@ -25,7 +25,7 @@ export default function CompanyManager() {
 
     const fetchSettings = async () => {
         try {
-            const res = await axios.get('/company');
+            const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/company');
             setSettings(res.data);
         } catch (err) {
             console.error("Failed to fetch settings", err);
@@ -38,7 +38,7 @@ export default function CompanyManager() {
         setSaving(true);
         setMessage(null);
         try {
-            await axios.put('/company', settings);
+            await axios.put(import.meta.env.VITE_API_BASE_URL + '/company', settings);
             setMessage({ type: 'success', text: 'Corporate settings updated successfully!' });
             setTimeout(() => setMessage(null), 5000);
         } catch (err) {

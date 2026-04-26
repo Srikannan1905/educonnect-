@@ -24,7 +24,7 @@ export default function Courses() {
   useEffect(() => {
     async function fetchCourses() {
       try {
-        const res = await axios.get('/courses');
+        const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/courses');
         if (Array.isArray(res.data)) {
           setCourses(res.data);
         }
@@ -49,7 +49,7 @@ export default function Courses() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await axios.post('/bookings/demo', {
+      await axios.post(import.meta.env.VITE_API_BASE_URL + '/bookings/demo', {
         courseId: selectedCourse.id,
         date: demoDate,
         startTime: demoTime

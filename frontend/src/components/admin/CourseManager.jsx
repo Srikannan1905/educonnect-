@@ -28,7 +28,7 @@ export default function CourseManager() {
 
     async function fetchCourses() {
         try {
-            const res = await axios.get('/courses');
+            const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/courses');
             if (Array.isArray(res.data)) {
                 setCourses(res.data);
             }
@@ -39,7 +39,7 @@ export default function CourseManager() {
 
     async function fetchCenters() {
         try {
-            const res = await axios.get('/centers');
+            const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/centers');
             if (Array.isArray(res.data)) {
                 setCenters(res.data);
             }
@@ -51,7 +51,7 @@ export default function CourseManager() {
     async function fetchStaff() {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('/users', {
+            const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/users', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (Array.isArray(res.data)) {
@@ -73,7 +73,7 @@ export default function CourseManager() {
     async function handleDelete(id) {
         if (confirm('Are you sure you want to delete this course?')) {
             try {
-                await axios.delete(`/courses/${id}`, getAuthHeader());
+                await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/courses/${id}`, getAuthHeader());
                 fetchCourses();
             } catch {
                 alert('Failed to delete course');
@@ -133,7 +133,7 @@ export default function CourseManager() {
             uploadData.append('image', formData.file);
             const token = localStorage.getItem('token');
             try {
-                const uploadRes = await axios.post('/upload', uploadData, {
+                const uploadRes = await axios.post(import.meta.env.VITE_API_BASE_URL + '/upload', uploadData, {
                     headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
                 });
                 thumbnailUrl = uploadRes.data;
@@ -155,9 +155,9 @@ export default function CourseManager() {
 
         try {
             if (currentCourse) {
-                await axios.put(`/courses/${currentCourse.id}`, dataToSend, getAuthHeader());
+                await axios.put(`${import.meta.env.VITE_API_BASE_URL}/courses/${currentCourse.id}`, dataToSend, getAuthHeader());
             } else {
-                await axios.post('/courses', dataToSend, getAuthHeader());
+                await axios.post(import.meta.env.VITE_API_BASE_URL + '/courses', dataToSend, getAuthHeader());
             }
             setIsModalOpen(false);
             fetchCourses();

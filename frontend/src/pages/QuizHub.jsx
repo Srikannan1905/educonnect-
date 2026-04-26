@@ -18,7 +18,7 @@ export default function QuizHub() {
 
     const fetchQuizzes = async () => {
         try {
-            const res = await axios.get('/quizzes/all');
+            const res = await axios.get(import.meta.env.VITE_API_BASE_URL + '/quizzes/all');
             setQuizzes(res.data);
         } catch (err) {
             console.error("Failed to fetch quizzes", err);

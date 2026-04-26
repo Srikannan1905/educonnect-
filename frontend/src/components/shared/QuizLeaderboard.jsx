@@ -16,7 +16,7 @@ export default function QuizLeaderboard({ isOpen, onClose, quizId, quizTitle }) 
     const fetchLeaderboard = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`/quizzes/${quizId}/leaderboard`);
+            const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/quizzes/${quizId}/leaderboard`);
             setLeaderboard(res.data);
         } catch (err) {
             console.error("Failed to fetch leaderboard", err);

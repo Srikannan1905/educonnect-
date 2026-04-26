@@ -7,6 +7,14 @@ const { Sequelize } = require('sequelize');
  */
 async function heal(sequelize) {
     console.log('--- Schema Guardian: Starting Audit ---');
+    
+    // Skip audit for non-SQLite databases (Postgres handles sync better)
+    if (sequelize.getDialect() !== 'sqlite') {
+        console.log('[Schema Guardian] Non-SQLite database detected. Skipping PRAGMA audit.');
+        console.log('--- Schema Guardian: Audit Complete ---');
+        return;
+    }
+
     const models = sequelize.models;
 
     for (const modelName in models) {

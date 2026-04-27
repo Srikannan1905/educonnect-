@@ -50,6 +50,11 @@ app.get('/', (req, res) => {
     res.send('API is running...');
 });
 
+// Simple health check (No DB)
+app.get('/api/health-check', (req, res) => {
+    res.status(200).json({ status: 'ok', environment: process.env.VERCEL ? 'vercel' : 'local' });
+});
+
 // Vercel Database Initialization Route
 app.get('/api/init-db', async (req, res) => {
     try {

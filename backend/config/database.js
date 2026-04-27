@@ -5,7 +5,7 @@ require('dotenv').config();
 let sequelize;
 
 if (process.env.DATABASE_URL) {
-    console.log('Connecting to PostgreSQL database via Pooler...');
+    console.log('Connecting to Neon PostgreSQL database...');
     sequelize = new Sequelize(process.env.DATABASE_URL, {
         dialect: 'postgres',
         protocol: 'postgres',
@@ -14,9 +14,9 @@ if (process.env.DATABASE_URL) {
                 require: true,
                 rejectUnauthorized: false
             },
+            // Mandatory for Neon/Supabase Pooler
             prepareThreshold: 0
         },
-        // IMPORTANT: Supabase Pooler settings
         pool: {
             max: 5,
             min: 0,

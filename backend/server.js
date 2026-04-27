@@ -29,7 +29,6 @@ app.use('/uploads', express.static('uploads'));
 const authRoutes = require('./routes/authRoutes');
 const centerRoutes = require('./routes/centerRoutes');
 const courseRoutes = require('./routes/courseRoutes');
-const bookingRoutes = require('./routes/bookingRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/centers', centerRoutes);
@@ -78,50 +77,42 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Database Connection and Server Start
-const startServer = async () => {
+// Database Connection
+const initDB = async () => {
     try {
         await sequelize.authenticate();
         console.log('Database connected.');
 
-        // Initialize and listen if we are not in Vercel Serverless environment
         if (!process.env.VERCEL) {
-            // Step 1: Manual Schema Check (Heal)
             await heal(sequelize);
-
-            // Step 2: Standard Sync (Safe for existing tables)
             await sequelize.sync({ force: false });
             console.log('Models synced.');
-
-            // Listen on default interface
-            app.listen(PORT, () => {
-                console.log(`Server running on port ${PORT}`);
-                console.log(`- Local: http://localhost:${PORT}`);
-                console.log(`- Network: http://0.0.0.0:${PORT}`);
-            });
         }
     } catch (error) {
-        console.error('Unable to connect to the database:', error);
-        if (!process.env.VERCEL) {
-            process.exit(1); // Exit if DB fails natively
-        }
+        console.error('Database connection error:', error);
     }
 };
 
+// Start Server locally
+if (!process.env.VERCEL) {
+    initDB().then(() => {
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    });
+} else {
+    // On Vercel, we just initialize the connection
+    initDB();
+}
+
 // Global Error Handlers
 process.on('uncaughtException', (err) => {
-    console.error('UNCAUGHT EXCEPTION! 💥 Shutting down...');
-    console.error(err.name, err.message, err.stack);
-    process.exit(1);
+    console.error('UNCAUGHT EXCEPTION!', err);
 });
 
 process.on('unhandledRejection', (err) => {
-    console.error('UNHANDLED REJECTION! 💥 Shutting down...');
-    console.error(err.name, err.message, err.stack);
-    process.exit(1);
+    console.error('UNHANDLED REJECTION!', err);
 });
 
-startServer();
-
-// Export the app for Vercel Serverless Functions
+// Export the app for Vercel
 module.exports = app;

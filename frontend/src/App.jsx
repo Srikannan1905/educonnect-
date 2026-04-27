@@ -27,7 +27,10 @@ import Privacy from './pages/Privacy';
 import QuizHub from './pages/QuizHub';
 
 // Configure Axios
-axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+const rawApiUrl = import.meta.env.VITE_API_URL || '';
+axios.defaults.baseURL = rawApiUrl.startsWith('http://')
+  ? rawApiUrl.replace('http://', 'https://')
+  : rawApiUrl;
 axios.defaults.withCredentials = true;
 
 // Add a request interceptor to include the auth token

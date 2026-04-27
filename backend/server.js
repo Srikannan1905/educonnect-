@@ -16,11 +16,11 @@ app.use((req, res, next) => {
     next();
 });
 
-// app.use(cors({
-//     origin: true, // Allow all origins for debugging
-//     credentials: true,
-//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-// }));
+app.use(cors({
+    origin: true,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));

@@ -5,7 +5,7 @@ require('dotenv').config();
 let sequelize;
 
 if (process.env.DATABASE_URL) {
-    console.log('Connecting to PostgreSQL database...');
+    console.log('Connecting to PostgreSQL database via Pooler...');
     sequelize = new Sequelize(process.env.DATABASE_URL, {
         dialect: 'postgres',
         protocol: 'postgres',
@@ -13,7 +13,15 @@ if (process.env.DATABASE_URL) {
             ssl: {
                 require: true,
                 rejectUnauthorized: false
-            }
+            },
+            prepareThreshold: 0
+        },
+        // IMPORTANT: Supabase Pooler settings
+        pool: {
+            max: 5,
+            min: 0,
+            acquire: 30000,
+            idle: 10000
         },
         logging: false,
     });
